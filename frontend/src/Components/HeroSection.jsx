@@ -1,4 +1,3 @@
-// HeroSection.jsx
 import React from 'react';
 import { FiArrowRight } from 'react-icons/fi';
 import videoSource from '../images/From KlickPin CF vector animation video nel 2025 _ Video.mp4';

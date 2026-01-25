@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../StyleSheets/Navbar.css';
+import { FiUser } from 'react-icons/fi';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +18,9 @@ const Navbar = () => {
             <div className="auth-buttons">
               <button className="btn login-btn">Login</button>
               <button className="btn signup-btn">Sign Up</button>
+            </div>
+             <div className="profile-icon">
+              <FiUser className="user-icon" />
             </div>
           </div>
 
