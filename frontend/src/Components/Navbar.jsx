@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import '../StyleSheets/Navbar.css';
 import { FiUser } from 'react-icons/fi';
 
@@ -9,19 +10,19 @@ const Navbar = () => {
     <header className="header">
       <nav className="navbar">
         <div className="nav-container">
-          <div className="nav-logo">TeamBuddy</div>
+          <Link to="/" className="nav-logo">TeamBuddy</Link>
           
           <div className={`nav-links ${isOpen ? 'active' : ''}`}>
-            <a href="#home" className="nav-link">Home</a>
-            <a href="#about" className="nav-link">About</a>
-            <a href="#contact" className="nav-link">Contact</a>
+            <Link to="/" className="nav-link">Home</Link>
+            <Link to="/about" className="nav-link">About</Link>
+            <Link to="/contact" className="nav-link">Contact</Link>
             <div className="auth-buttons">
-              <button className="btn login-btn">Login</button>
-              <button className="btn signup-btn">Sign Up</button>
+              <Link to="/login" className="btn login-btn">Login</Link>
+              <Link to="/signup" className="btn signup-btn">Sign Up</Link>
             </div>
-             <div className="profile-icon">
+           <Link to="/signup" className="profile-icon">
               <FiUser className="user-icon" />
-            </div>
+            </Link>
           </div>
 
           <div 
