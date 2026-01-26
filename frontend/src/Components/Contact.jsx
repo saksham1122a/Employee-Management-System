@@ -22,7 +22,6 @@ const Contact = () => {
                 <div>
                   <h4>Email Us</h4>
                   <p>support@teambuddy.com</p>
-                  <p>sales@teambuddy.com</p>
                 </div>
               </div>
 
@@ -43,24 +42,9 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4>Visit Us</h4>
-                  <p>123 Business Avenue</p>
-                  <p>New York, NY 10001, USA</p>
+                  <p>Vishal Nagar </p>
+                  <p>Ludhiana, Punjab 141001, India</p>
                 </div>
-              </div>
-            </div>
-
-            <div className="social-links">
-              <h4>Connect With Us</h4>
-              <div className="social-icons">
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-                  <FiLinkedin className="social-icon" />
-                </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-                  <FiTwitter className="social-icon" />
-                </a>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer">
-                  <FiGithub className="social-icon" />
-                </a>
               </div>
             </div>
           </div>

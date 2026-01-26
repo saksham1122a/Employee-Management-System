@@ -1,0 +1,137 @@
+:root {
+  --muted-blue: #6883a6;
+  --light-orange: #f4a261;
+  --dark-gray: #333;
+  --white: #ffffff;
+}
+
+
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa, #e4ebf3);
+  padding: 2rem;
+}
+
+
+
+.auth-card {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+  padding: 2.8rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-title {
+  font-size: 1.9rem;
+  color: var(--dark-gray);
+  margin-bottom: 0.4rem;
+  text-align: center;
+}
+
+.auth-subtitle {
+  color: var(--muted-blue);
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+
+.auth-form {
+  margin-top: 1rem;
+}
+
+.input-group {
+  margin-bottom: 1.4rem;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--dark-gray);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--muted-blue);
+  box-shadow: 0 0 0 3px rgba(104, 131, 166, 0.2);
+}
+
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-bottom: 1.8rem;
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.forgot-link {
+  color: var(--muted-blue);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+
+.auth-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: var(--muted-blue);
+  border: none;
+  border-radius: 8px;
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-btn:hover {
+  background-color: #5a75a0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+
+
+.switch-text {
+  margin-top: 1.8rem;
+  font-size: 0.9rem;
+  color: #555;
+  text-align: center;
+}
+
+.switch-text a {
+  color: var(--light-orange);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.switch-text a:hover {
+  text-decoration: underline;
+}

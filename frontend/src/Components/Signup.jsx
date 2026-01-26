@@ -1,13 +1,13 @@
 import React from "react";
-import { Link } from 'react-router-dom';
-import "../StyleSheets/Signup.css";
+import { Link } from "react-router-dom";
+import "../StyleSheets/Auth.css";
 
 const Signup = () => {
   return (
     <div className="auth-wrapper">
       <div className="auth-card">
-        <h2 className="auth-title">Create Your Account</h2>
-        <p className="auth-subtitle">Join TeamBuddy today</p>
+        <h2 className="auth-title">Create Account</h2>
+        <p className="auth-subtitle">Join TeamBuddy and manage smarter</p>
 
         <form className="auth-form">
           <div className="input-group">
@@ -16,7 +16,7 @@ const Signup = () => {
           </div>
 
           <div className="input-group">
-            <label>Email</label>
+            <label>Email Address</label>
             <input type="email" placeholder="Enter your email" />
           </div>
 
@@ -30,10 +30,10 @@ const Signup = () => {
             <input type="password" placeholder="Confirm password" />
           </div>
 
-          <button type="submit" className="auth-btn">Sign Up</button>
+          <button type="submit" className="auth-btn">Create Account</button>
 
           <p className="switch-text">
-            Already have an account? <Link to="/login">Login</Link>
+            Already have an account? <Link to="/login">Login here</Link>
           </p>
         </form>
       </div>

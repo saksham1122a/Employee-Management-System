@@ -13,11 +13,7 @@ const About = () => {
 
         <div className="about-content">
           <div className="about-text">
-            <p>
-              TeamBuddy is a cutting-edge Employee Management System designed to streamline HR processes, 
-              enhance team collaboration, and drive organizational success. Our platform combines intuitive 
-              design with powerful features to transform how companies manage their most valuable asset - their people.
-            </p>
+           
             
             <div className="features-grid">
               <div className="feature-card">

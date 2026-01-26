@@ -1,48 +1,41 @@
 import React from "react";
-import { Link } from 'react-router-dom';
-import "../StyleSheets/Login.css";
-
+import { Link } from "react-router-dom";
+import "../StyleSheets/Auth.css";
 
 const Login = () => {
-return (
-<div className="auth-wrapper">
-<div className="auth-card">
-<h2 className="auth-title">Login to TeamBuddy</h2>
-<p className="auth-subtitle">Manage your team efficiently</p>
+  return (
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <h2 className="auth-title">Welcome Back</h2>
+        <p className="auth-subtitle">Login to continue with TeamBuddy</p>
 
+        <form className="auth-form">
+          <div className="input-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="Enter your email" />
+          </div>
 
-<form className="auth-form">
-<div className="input-group">
-<label>Email</label>
-<input type="email" placeholder="Enter your email" />
-</div>
+          <div className="input-group">
+            <label>Password</label>
+            <input type="password" placeholder="Enter your password" />
+          </div>
 
+          <div className="form-options">
+            <label className="remember">
+              <input type="checkbox" /> Remember me
+            </label>
+           <Link to="/forgetpassword" className="forgot-link">Forgot Password?</Link>
+          </div>
 
-<div className="input-group">
-<label>Password</label>
-<input type="password" placeholder="Enter your password" />
-</div>
+          <button type="submit" className="auth-btn">Login</button>
 
-
-<div className="form-options">
-<label className="remember">
-<input type="checkbox" /> Remember me
-</label>
-<a href="/forgot" className="forgot-link">Forgot password?</a>
-</div>
-
-
-<button type="submit" className="auth-btn">Login</button>
-
-
-<p className="switch-text">
-  Don't have an account? <Link to="/signup">Sign Up</Link>
-</p>
-</form>
-</div>
-</div>
-);
+          <p className="switch-text">
+            Don’t have an account? <Link to="/signup">Create one</Link>
+          </p>
+        </form>
+      </div>
+    </div>
+  );
 };
-
 
 export default Login;
