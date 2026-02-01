@@ -8,6 +8,10 @@ import Login from './Components/Login';
 import Signup from './Components/Signup';
 import Footer from './Components/Footer';
 import ForgetPassword from './Components/ForgetPassword';
+import AdminDashboard from '../admin/AdminDashboard';
+import EmployeeDashboard from '../Employee/EmployeeDashboard';
+import Attendance from '../Employee/Attendance';
+import Leave from '../Employee/Leave';
 import './App.css';
 
 function App() {
@@ -28,6 +32,10 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/forgetpassword" element={<ForgetPassword />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/employee" element={<EmployeeDashboard />} />
+          <Route path="/attendance" element={<Attendance />} />
+          <Route path="/leave" element={<Leave />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         <Footer />
