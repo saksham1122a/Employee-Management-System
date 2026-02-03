@@ -42,9 +42,9 @@ const Login = () => {
       // Role-based redirect
       const role = data.user.role;
 
-      if (role === "admin") navigate("/admin/dashboard");
-      else if (role === "manager") navigate("/manager/dashboard");
-      else navigate("/employee/dashboard");
+      if (role === "admin") navigate("/admin");
+      else if (role === "manager") navigate("/manager");
+      else navigate("/employee"); 
 
     } catch (err) {
       setError(err.message);

@@ -20,26 +20,31 @@ function App() {
       <div className="App">
         <Navbar />
         <Routes>
-          <Route path="/" element={
-            <>
-              <HeroSection />
-              <About />
-              <Contact />
-            </>
-          } />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/forgetpassword" element={<ForgetPassword />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/employee" element={<EmployeeDashboard />} />
-          <Route path="/attendance" element={<Attendance />} />
-          <Route path="/leave" element={<Leave />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-        <Footer />
-      
+  <Route path="/" element={
+    <>
+      <HeroSection />
+      <About />
+      <Contact />
+      <Footer />
+    </>
+  } />
+  <Route path="/login" element={<Login />} />
+  <Route path="/signup" element={<Signup />} />
+  <Route path="/about" element={<About />} />
+  <Route path="/contact" element={<Contact />} />
+  <Route path="/forgetpassword" element={<ForgetPassword />} />
+  
+  {/* Admin routes */}
+  <Route path="/admin" element={<AdminDashboard />} />
+  
+  {/* Employee routes */}
+  <Route path="/employee" element={<EmployeeDashboard />} />
+  <Route path="/employee/attendance" element={<Attendance />} />
+  <Route path="/employee/leave" element={<Leave />} />
+  
+  <Route path="*" element={<Navigate to="/" />} />
+
+</Routes>
       </div>
     </Router>
   );
