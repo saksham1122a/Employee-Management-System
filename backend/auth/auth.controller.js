@@ -45,31 +45,40 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log("🔍 Login attempt:", { email }); // Debug log
+
     if (!email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     const user = await User.findOne({ email });
+    console.log("👤 User found:", user ? { id: user._id, email: user.email, role: user.role } : null); // Debug log
+    
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const isMatch = await comparePassword(password, user.password);
+    console.log("🔐 Password match:", isMatch); // Debug log
+    
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const token = generateToken(user);
+    console.log("🎫 Token generated for user:", user.email); // Debug log
 
     res.status(200).json({
       token,
       user: {
         id: user._id,
         email: user.email,
+        name: user.name,
         role: user.role,
       },
     });
   } catch (error) {
+    console.error("❌ Login error:", error); // Debug log
     res.status(500).json({ message: error.message });
   }
 };

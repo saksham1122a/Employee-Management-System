@@ -9,6 +9,7 @@ import Signup from './Components/Signup';
 import Footer from './Components/Footer';
 import ForgetPassword from './Components/ForgetPassword';
 import AdminDashboard from '../admin/AdminDashboard';
+import ManagerDashboard from '../Manager/ManagerDashboard';
 import EmployeeDashboard from '../Employee/EmployeeDashboard';
 import Attendance from '../Employee/Attendance';
 import Leave from '../Employee/Leave';
@@ -36,6 +37,9 @@ function App() {
   
   {/* Admin routes */}
   <Route path="/admin" element={<AdminDashboard />} />
+  
+  {/* Manager routes */}
+  <Route path="/manager" element={<ManagerDashboard />} />
   
   {/* Employee routes */}
   <Route path="/employee" element={<EmployeeDashboard />} />
