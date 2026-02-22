@@ -25,12 +25,12 @@ import {
   FiX
 } from 'react-icons/fi';
 import '../admin/AdminDashboard.css';
+import UserManagement from './User';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [searchTerm, setSearchTerm] = useState('');
-  const [users, setUsers] = useState([]);
   const [stats, setStats] = useState({
     totalUsers: 0,
     activeUsers: 0,
@@ -40,19 +40,10 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate fetching data
-    const mockUsers = [
-      { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Employee', status: 'Active', joinDate: '2024-01-15' },
-      { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Manager', status: 'Active', joinDate: '2024-01-10' },
-      { id: 3, name: 'Mike Johnson', email: 'mike@example.com', role: 'HR', status: 'Inactive', joinDate: '2023-12-20' },
-      { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com', role: 'Employee', status: 'Active', joinDate: '2024-02-01' },
-      { id: 5, name: 'Tom Brown', email: 'tom@example.com', role: 'Employee', status: 'Active', joinDate: '2024-01-25' }
-    ];
-
-    setUsers(mockUsers);
+    // Simulate fetching stats (without user data)
     setStats({
-      totalUsers: mockUsers.length,
-      activeUsers: mockUsers.filter(u => u.status === 'Active').length,
+      totalUsers: 4,
+      activeUsers: 3,
       newUsers: 2,
       totalRevenue: 125000
     });
@@ -70,7 +61,7 @@ const AdminDashboard = () => {
   ];
 
   const quickActions = [
-    { label: 'Add User', icon: <FiUserPlus />, action: () => navigate('/admin/add-user') },
+    { label: 'Manage Users', icon: <FiUserPlus />, action: () => setActiveTab('users') },
     { label: 'Generate Report', icon: <FiDownload />, action: () => console.log('Generate report') },
     { label: 'System Settings', icon: <FiSettings />, action: () => setActiveTab('settings') }
   ];
@@ -86,11 +77,6 @@ const AdminDashboard = () => {
     // Handle logout logic
     navigate('/login');
   };
-
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const renderContent = () => {
     switch(activeTab) {
@@ -181,75 +167,7 @@ const AdminDashboard = () => {
         );
 
       case 'users':
-        return (
-          <div className="users-management">
-            <div className="card">
-              <div className="card-header">
-                <h3>User Management</h3>
-                <div className="card-actions">
-                  <div className="search-box">
-                    <FiSearch className="search-icon" />
-                    <input
-                      type="text"
-                      placeholder="Search users..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
-                  <button className="btn-primary">
-                    <FiUserPlus /> Add User
-                  </button>
-                </div>
-              </div>
-              <div className="table-container">
-                <table className="users-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Role</th>
-                      <th>Status</th>
-                      <th>Join Date</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers.map(user => (
-                      <tr key={user.id}>
-                        <td>
-                          <div className="user-info">
-                            <div className="user-avatar">{user.name.charAt(0)}</div>
-                            <span>{user.name}</span>
-                          </div>
-                        </td>
-                        <td>{user.email}</td>
-                        <td>
-                          <span className="role-badge">{user.role}</span>
-                        </td>
-                        <td>
-                          <span className={`status-badge ${user.status.toLowerCase()}`}>
-                            {user.status}
-                          </span>
-                        </td>
-                        <td>{user.joinDate}</td>
-                        <td>
-                          <div className="action-buttons">
-                            <button className="btn-icon" title="Edit">
-                              <FiEdit />
-                            </button>
-                            <button className="btn-icon delete" title="Delete">
-                              <FiTrash2 />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        );
+        return <UserManagement />;
 
       default:
         return (

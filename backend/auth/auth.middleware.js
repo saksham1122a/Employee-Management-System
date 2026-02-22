@@ -3,7 +3,7 @@
 // Attaches user to request:
 // req.user = { id, role }
 
-import jwt from "jsonwebtoken";
+const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -22,4 +22,12 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-export default authMiddleware;
+const requireAdmin = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ message: "Admin access required" });
+  }
+};
+
+module.exports = { authMiddleware, requireAdmin };

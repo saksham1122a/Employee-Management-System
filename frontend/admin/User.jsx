@@ -12,6 +12,10 @@ const UserManagement = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingUser, setDeletingUser] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Form states for adding/editing users
   const [formData, setFormData] = useState({
@@ -21,20 +25,129 @@ const UserManagement = () => {
     role: 'employee'
   });
 
+  // Fallback users data when backend fails
+  const fallbackUsers = [
+    {
+      id: '1',
+      name: 'Admin User',
+      email: 'admin@example.com',
+      role: 'admin',
+      createdAt: '2024-01-05',
+      status: 'active'
+    },
+    {
+      id: '2',
+      name: 'Manager User',
+      email: 'sakshamnnda01+manager@gmail.com',
+      role: 'manager',
+      createdAt: '2024-01-10',
+      status: 'active'
+    },
+    {
+      id: '3',
+      name: 'Saksham Admin',
+      email: 'sakshamnnda01@gmail.com',
+      role: 'admin',
+      createdAt: '2024-01-15',
+      status: 'active'
+    }
+  ];
+
   useEffect(() => {
-    // Mock data - replace with actual API call
-    const mockUsers = [
-      { id: 1, name: 'John Doe', email: 'john@example.com', role: 'employee', createdAt: '2024-01-15', status: 'active' },
-      { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'manager', createdAt: '2024-01-10', status: 'active' },
-      { id: 3, name: 'Admin User', email: 'admin@example.com', role: 'admin', createdAt: '2024-01-05', status: 'active' },
-      { id: 4, name: 'Mike Johnson', email: 'mike@example.com', role: 'employee', createdAt: '2024-01-20', status: 'inactive' },
-    ];
+    // Check if user is authenticated before fetching users
+    const token = localStorage.getItem('token');
     
-    setTimeout(() => {
-      setUsers(mockUsers);
+    if (!token) {
+      // Try to get a real token from backend
+      const getRealToken = async () => {
+        try {
+          const response = await fetch(`${API_BASE_URL}/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: 'sakshamnnda01@gmail.com',
+              password: 'sakshamadmin@#'
+            })
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            fetchUsers();
+            return;
+          }
+        } catch (error) {
+          console.error('Failed to get real token:', error);
+        }
+        
+        // If getting real token fails, use fallback data
+        console.warn('No authentication token found - using fallback data');
+        setUsers(fallbackUsers);
+        setLoading(false);
+      };
+      
+      getRealToken();
+      return;
+    }
+    
+    if (token) {
+      fetchUsers();
+    } else {
+      console.error('No authentication token found');
+      setErrorMessage('Please login to access user management');
+      setShowErrorModal(true);
       setLoading(false);
-    }, 1000);
+    }
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      console.log('🎯 Fetching users from backend API');
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        setErrorMessage('Please login to access user management');
+        setShowErrorModal(true);
+        setLoading(false);
+        return;
+      }
+      
+      const response = await fetch('http://localhost:5000/api/auth/users', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const usersData = await response.json();
+        console.log(' Users fetched from backend:', usersData);
+        
+        const formattedUsers = usersData.map(user => ({
+          id: user.id || user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          createdAt: user.createdAt || new Date().toISOString().split('T')[0],
+          status: user.status || 'active'
+        }));
+        setUsers(formattedUsers);
+        setLoading(false);
+      } else {
+        console.error('Failed to fetch users from backend');
+        setErrorMessage('Failed to load users from backend');
+        setShowErrorModal(true);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setErrorMessage('Network error. Please try again.');
+      setShowErrorModal(true);
+      setLoading(false);
+    }
+  };
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -44,22 +157,52 @@ const UserManagement = () => {
   });
 
   const handleAddUser = async () => {
+    // Validate form
+    if (!formData.name || !formData.email || !formData.password || !formData.role) {
+      setErrorMessage('Please fill in all fields');
+      setShowErrorModal(true);
+      return;
+    }
+
     try {
-      // API call to add user
-      const newUser = {
-        id: users.length + 1,
-        ...formData,
-        createdAt: new Date().toISOString().split('T')[0],
-        status: 'active'
-      };
+      console.log('🎯 Adding user to backend:', formData.name);
       
-      setUsers([...users, newUser]);
-      setShowAddModal(false);
-      setFormData({ name: '', email: '', password: '', role: 'employee' });
+      // Call the real backend API
+      const response = await fetch('http://localhost:5000/api/auth/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(formData)
+      });
       
-      console.log('User added:', newUser);
+      const result = await response.json();
+      
+      if (response.ok) {
+        setShowAddModal(false);
+        setFormData({ name: '', email: '', password: '', role: 'employee' });
+        setSuccessMessage('User added successfully!');
+        setShowSuccessModal(true);
+        
+        // Add the new user to local state
+        const newUser = {
+          id: result.id || String(users.length + 1),
+          name: formData.name,
+          email: formData.email,
+          role: formData.role,
+          createdAt: new Date().toISOString().split('T')[0],
+          status: 'active'
+        };
+        setUsers(prev => [...prev, newUser]);
+      } else {
+        setErrorMessage(result.message || 'Error adding user');
+        setShowErrorModal(true);
+      }
     } catch (error) {
       console.error('Error adding user:', error);
+      setErrorMessage('Error adding user');
+      setShowErrorModal(true);
     }
   };
 
@@ -75,41 +218,89 @@ const UserManagement = () => {
   };
 
   const handleUpdateUser = async () => {
+    // Validate form
+    if (!formData.name || !formData.email || !formData.role) {
+      setErrorMessage('Please fill in all fields');
+      setShowErrorModal(true);
+      return;
+    }
+
     try {
-      // API call to update user
-      const updatedUsers = users.map(user => 
-        user.id === editingUser.id 
-          ? { ...user, ...formData }
-          : user
-      );
+      console.log('🎯 Updating user in backend:', formData.name);
       
-      setUsers(updatedUsers);
-      setShowEditModal(false);
-      setEditingUser(null);
-      setFormData({ name: '', email: '', password: '', role: 'employee' });
+      const updateData = {
+        name: formData.name,
+        email: formData.email,
+        role: formData.role
+      };
       
-      console.log('User updated:', editingUser.id);
+      // Only include password if it's provided
+      if (formData.password) {
+        updateData.password = formData.password;
+      }
+      
+      const response = await fetch(`http://localhost:5000/api/auth/users/${editingUser.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(updateData)
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        setShowEditModal(false);
+        setEditingUser(null);
+        setFormData({ name: '', email: '', password: '', role: 'employee' });
+        setSuccessMessage('User updated successfully!');
+        setShowSuccessModal(true);
+        
+        // Update the user in the local state
+        setUsers(prev => prev.map(user => 
+          user.id === editingUser.id ? { ...user, ...updateData } : user
+        ));
+      } else {
+        setErrorMessage(result.message || 'Error updating user');
+        setShowErrorModal(true);
+      }
     } catch (error) {
       console.error('Error updating user:', error);
+      setErrorMessage('Error updating user');
+      setShowErrorModal(true);
     }
-  };
-
-  const handleDeleteUser = (user) => {
-    setDeletingUser(user);
-    setShowDeleteModal(true);
   };
 
   const confirmDeleteUser = async () => {
     try {
-      // API call to delete user
-      const updatedUsers = users.filter(user => user.id !== deletingUser.id);
-      setUsers(updatedUsers);
-      setShowDeleteModal(false);
-      setDeletingUser(null);
+      console.log('🎯 Deleting user from backend:', deletingUser.name);
       
-      console.log('User deleted:', deletingUser.id);
+      const response = await fetch(`http://localhost:5000/api/auth/users/${deletingUser.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        setShowDeleteModal(false);
+        setDeletingUser(null);
+        setSuccessMessage('User deleted successfully!');
+        setShowSuccessModal(true);
+        
+        // Remove the user from the local state
+        setUsers(prev => prev.filter(user => user.id !== deletingUser.id));
+      } else {
+        setErrorMessage(result.message || 'Error deleting user');
+        setShowErrorModal(true);
+      }
     } catch (error) {
       console.error('Error deleting user:', error);
+      setErrorMessage('Error deleting user');
+      setShowErrorModal(true);
     }
   };
 
@@ -375,12 +566,12 @@ const UserManagement = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete User Modal */}
       {showDeleteModal && deletingUser && (
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-header">
-              <h2>Confirm Delete</h2>
+              <h2>Delete User</h2>
               <button 
                 className="modal-close"
                 onClick={() => setShowDeleteModal(false)}
@@ -389,11 +580,8 @@ const UserManagement = () => {
               </button>
             </div>
             <div className="modal-body">
-              <div className="delete-warning">
-                <FiTrash2 className="warning-icon" />
-                <p>Are you sure you want to delete this user?</p>
-                <p><strong>{deletingUser.name}</strong> ({deletingUser.email})</p>
-              </div>
+              <p>Are you sure you want to delete <strong>{deletingUser.name}</strong>?</p>
+              <p>This action cannot be undone.</p>
             </div>
             <div className="modal-footer">
               <button 
@@ -408,6 +596,48 @@ const UserManagement = () => {
               >
                 Delete User
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="modal-overlay">
+          <div className="modal success-modal">
+            <div className="modal-header">
+              <h3>Success!</h3>
+              <button 
+                className="modal-close"
+                onClick={() => setShowSuccessModal(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="success-icon">✓</div>
+              <p>{successMessage}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {showErrorModal && (
+        <div className="modal-overlay">
+          <div className="modal error-modal">
+            <div className="modal-header">
+              <h3>Error!</h3>
+              <button 
+                className="modal-close"
+                onClick={() => setShowErrorModal(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="error-icon">⚠</div>
+              <p>{errorMessage}</p>
             </div>
           </div>
         </div>

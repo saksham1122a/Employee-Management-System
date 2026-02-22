@@ -36,6 +36,18 @@
   display: flex;
   gap: 0.4rem;
   align-items: center;
+  transition: all 0.3s ease;
+}
+
+.checkin-btn:hover:not(:disabled) {
+  background: #27ae60;
+  transform: translateY(-2px);
+}
+
+.checkin-btn:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .checkout-btn {
@@ -45,6 +57,18 @@
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.checkout-btn:hover:not(:disabled) {
+  background: #c0392b;
+  transform: translateY(-2px);
+}
+
+.checkout-btn:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 /* Stats */
@@ -101,6 +125,11 @@
 .ontime {
   background: #e8f4fd;
   color: #3498db;
+}
+
+.absent {
+  background: #f4f4f4;
+  color: #7f8c8d;
 }
 
 /* History */

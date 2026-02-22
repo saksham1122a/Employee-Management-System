@@ -1,0 +1,83 @@
+{
+  "users": [
+    {
+      "_id": "1",
+      "name": "Admin User",
+      "email": "admin@example.com",
+      "password": "password",
+      "role": "admin",
+      "createdAt": "2024-01-05T00:00:00.000Z",
+      "updatedAt": "2024-01-05T00:00:00.000Z"
+    },
+    {
+      "_id": "2",
+      "name": "Manager User",
+      "email": "sakshamnnda01+manager@gmail.com",
+      "password": "sakshammanager@#",
+      "role": "manager",
+      "createdAt": "2024-01-10T00:00:00.000Z",
+      "updatedAt": "2024-01-10T00:00:00.000Z"
+    },
+    {
+      "_id": "3",
+      "name": "Saksham Admin",
+      "email": "sakshamnnda01@gmail.com",
+      "password": "sakshamadmin@#",
+      "role": "admin",
+      "createdAt": "2024-01-15T00:00:00.000Z",
+      "updatedAt": "2024-01-15T00:00:00.000Z"
+    },
+    {
+      "_id": "4",
+      "name": "John Employee",
+      "email": "john.employee@example.com",
+      "password": "$2b$10$Rnv5qo7xAxmAxKalcHXwsuC/FTMoqEnC6fQrqjRbuSmlvkM0nLyI2",
+      "createdAt": "2026-02-22T14:02:09.996Z",
+      "updatedAt": "2026-02-22T14:02:09.996Z"
+    },
+    {
+      "_id": "5",
+      "name": "Jane Employee",
+      "email": "jane.employee@example.com",
+      "password": "$2b$10$Zy25kwp29FHULUO5lBPc0u2R.oc1gShdiBzkENlYr0uXAKmsJep3m",
+      "createdAt": "2026-02-22T14:02:32.293Z",
+      "updatedAt": "2026-02-22T14:02:32.293Z"
+    },
+    {
+      "_id": "6",
+      "name": "Mike Employee",
+      "email": "mike.employee@example.com",
+      "password": "$2b$10$u6i.bvGAq.sPQqrPi49MWeaZRBTIrVxw63qD/Uz.hyH/M3KhvPKC6",
+      "role": "employee",
+      "createdAt": "2026-02-22T14:03:36.483Z",
+      "updatedAt": "2026-02-22T14:03:36.483Z"
+    },
+    {
+      "_id": "7",
+      "name": "Saksham Nanda",
+      "email": "saksham@example.com",
+      "password": "$2b$10$568AGpnVFoJg3x8waUqM0.0WPnykmlBl1o6.HPKY/KTdCdRdyLT5y",
+      "role": "employee",
+      "createdAt": "2026-02-22T14:12:32.879Z",
+      "updatedAt": "2026-02-22T14:12:32.879Z"
+    }
+  ],
+  "leaveRequests": [
+    {
+      "id": "1",
+      "type": "personal",
+      "startDate": "2026-02-22",
+      "endDate": "2026-02-22",
+      "days": 1,
+      "status": "pending",
+      "reason": "Day out with family. Catch you tomorrow!",
+      "appliedOn": "2026-02-22",
+      "approvedBy": "--",
+      "approvedOn": "--",
+      "employeeId": "7",
+      "emergencyContact": "Saksham ",
+      "emergencyPhone": "6006915762",
+      "attachment": "Har Har Mahadev.jpeg"
+    }
+  ]
+}

@@ -252,89 +252,215 @@ const Leave = () => {
         showNotification(errorData.message || 'Failed to submit leave request', 'error');
       }
     } catch (error) {
-      console.error('Error submitting leave request:', error);
+      console.error('Error deleting leave request:', error);
+    }
+  } catch (error) {
+    console.error('Error fetching leave history:', error);
+    setLoading(false);
+  }
+};
+
+// Fetch leave history on component mount
+useEffect(() => {
+  fetchLeaveHistory();
+}, []);
+
+const [showRequestForm, setShowRequestForm] = useState(false);
+const [formData, setFormData] = useState({
+  type: 'annual',
+  startDate: '',
+  endDate: '',
+  reason: '',
+  attachment: null,
+  emergencyContact: '',
+  emergencyPhone: ''
+});
+
+const [filterStatus, setFilterStatus] = useState('all');
+const [searchTerm, setSearchTerm] = useState('');
+const [showLeavePolicy, setShowLeavePolicy] = useState(false);
+
+const leaveTypes = [
+  { value: 'annual', label: 'Annual Leave', icon: '', maxDays: 12 },
+  { value: 'sick', label: 'Sick Leave', icon: '', maxDays: 8 },
+  { value: 'personal', label: 'Personal Leave', icon: '', maxDays: 4 },
+  { value: 'maternity', label: 'Maternity Leave', icon: '', maxDays: 90 },
+  { value: 'paternity', label: 'Paternity Leave', icon: '', maxDays: 14 }
+];
+
+const calculateDays = (startDate, endDate) => {
+  if (!startDate || !endDate) return 0;
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const diffTime = Math.abs(end - start);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  return diffDays;
+};
+
+const handleSubmitRequest = async (e) => {
+  e.preventDefault();
+  
+  const days = calculateDays(formData.startDate, formData.endDate);
+  
+  // Validation
+  if (!formData.type || !formData.startDate || !formData.endDate || !formData.reason) {
+    showNotification('Please fill in all required fields', 'warning');
+    return;
+  }
+  
+  if (days <= 0) {
+    showNotification('End date must be after start date', 'error');
+    return;
+  }
+  
+  const leaveTypeInfo = leaveTypes.find(type => type.value === formData.type);
+  const availableDays = leaveBalance[formData.type] || 0;
+  
+  if (days > availableDays) {
+    showNotification(`Insufficient leave balance. Available: ${availableDays} days, Requested: ${days} days`, 'warning');
+    return;
+  }
+  
+  try {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      showNotification('Please login to submit leave request', 'error');
+      return;
+    }
+    
+    const response = await fetch('http://localhost:5000/api/auth/leave/request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        type: formData.type,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        reason: formData.reason,
+        emergencyContact: formData.emergencyContact,
+        emergencyPhone: formData.emergencyPhone,
+        attachment: formData.attachment?.name || null
+      })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Update leave balance
+      const currentBalance = leaveBalance[formData.type] || 0;
+      setLeaveBalance(prev => ({
+        ...prev,
+        [formData.type]: currentBalance - days,
+        totalAvailable: prev.totalAvailable - days
+      }));
+      
+      // Reset form
+      setFormData({
+        type: 'annual',
+        startDate: '',
+        endDate: '',
+        reason: '',
+        attachment: null,
+        emergencyContact: '',
+        emergencyPhone: ''
+      });
+      setShowRequestForm(false);
+      
+      // Refresh leave history
+      await fetchLeaveHistory();
+      
+      // Show success message
+      showNotification(`Leave request submitted successfully! ${days} days requested.`, 'success');
+    } else {
+      const errorData = await response.json();
+      showNotification(errorData.message || 'Failed to submit leave request', 'error');
+    }
+  } catch (error) {
+    console.error('Error deleting leave request:', error);
+    showNotification('Network error. Please try again.', 'error');
+  }
+};
+
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+  setFormData(prev => ({
+    ...prev,
+    [name]: value
+  }));
+};
+
+const handleDeleteRequest = async (id) => {
+  if (window.confirm('Are you sure you want to delete this leave request?')) {
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        showNotification('Please login to delete leave request', 'error');
+        return;
+      }
+      
+      const response = await fetch(`http://localhost:5000/api/auth/leave/requests/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        // Update leave balance back
+        const deletedLeave = leaveHistory.find(leave => leave.id === id);
+        if (deletedLeave) {
+          setLeaveBalance(prev => ({
+            ...prev,
+            [deletedLeave.type]: prev[deletedLeave.type] + deletedLeave.days,
+            totalAvailable: prev.totalAvailable + deletedLeave.days
+          }));
+        }
+        
+        // Refresh leave history
+        await fetchLeaveHistory();
+        
+        showNotification('Leave request deleted successfully!', 'success');
+      } else {
+        const errorData = await response.json();
+        showNotification(errorData.message || 'Failed to delete leave request', 'error');
+      }
+    } catch (error) {
+      console.error('Error deleting leave request:', error);
       showNotification('Network error. Please try again.', 'error');
     }
-  };
+  }
+};
 
-  const handleDeleteRequest = async (id) => {
-    if (window.confirm('Are you sure you want to delete this leave request?')) {
-      try {
-        const token = sessionStorage.getItem('token');
-        if (!token) {
-          showNotification('Please login to delete leave request', 'error');
-          return;
-        }
-        
-        const response = await fetch(`http://localhost:5000/api/auth/leave/requests/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (response.ok) {
-          // Update leave balance back
-          const deletedLeave = leaveHistory.find(leave => leave.id === id);
-          if (deletedLeave) {
-            setLeaveBalance(prev => ({
-              ...prev,
-              [deletedLeave.type]: prev[deletedLeave.type] + deletedLeave.days,
-              totalAvailable: prev.totalAvailable + deletedLeave.days
-            }));
-          }
-          
-          // Refresh leave history
-          await fetchLeaveHistory();
-          
-          showNotification('Leave request deleted successfully!', 'success');
-        } else {
-          const errorData = await response.json();
-          showNotification(errorData.message || 'Failed to delete leave request', 'error');
-        }
-      } catch (error) {
-        console.error('Error deleting leave request:', error);
-        showNotification('Network error. Please try again.', 'error');
-      }
-    }
+const getStatusBadge = (status) => {
+  const statusConfig = {
+    'approved': { class: 'approved', label: 'Approved', icon: <FiCheckCircle /> },
+    'pending': { class: 'pending', label: 'Pending', icon: <FiAlertCircle /> },
+    'rejected': { class: 'rejected', label: 'Rejected', icon: <FiXCircle /> }
   };
+  
+  const config = statusConfig[status] || statusConfig['pending'];
+  return (
+    <span className={`status-badge ${config.class}`}>
+      {config.icon}
+      {config.label}
+    </span>
+  );
+};
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+const filteredHistory = leaveHistory.filter(leave => {
+  const matchesStatus = filterStatus === 'all' || leave.status === filterStatus;
+  const matchesSearch = searchTerm === '' || 
+    leave.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    leave.reason.toLowerCase().includes(searchTerm.toLowerCase());
+  return matchesStatus && matchesSearch;
+});
 
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      'approved': { class: 'approved', label: 'Approved', icon: <FiCheckCircle /> },
-      'pending': { class: 'pending', label: 'Pending', icon: <FiAlertCircle /> },
-      'rejected': { class: 'rejected', label: 'Rejected', icon: <FiXCircle /> }
-    };
-    
-    const config = statusConfig[status] || statusConfig['pending'];
-    return (
-      <span className={`status-badge ${config.class}`}>
-        {config.icon}
-        {config.label}
-      </span>
-    );
-  };
-
-  const filteredHistory = leaveHistory.filter(leave => {
-    const matchesStatus = filterStatus === 'all' || leave.status === filterStatus;
-    const matchesSearch = searchTerm === '' || 
-      leave.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      leave.reason.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
-
-  const getLeaveTypeIcon = (type) => {
-    const typeConfig = leaveTypes.find(t => t.label === type);
-    return typeConfig?.icon || '';
-  };
+const getLeaveTypeIcon = (type) => {
+  const typeConfig = leaveTypes.find(t => t.label === type);
+  return typeConfig?.icon || '';
+};
 
   return (
     <div className="leave-container">
@@ -470,51 +596,37 @@ const Leave = () => {
             <div className="table-cell">Actions</div>
           </div>
           
-          {loading ? (
-            <div className="loading-state">
-              <div className="loading-spinner"></div>
-              <p>Loading leave history...</p>
-            </div>
-          ) : filteredHistory.length === 0 ? (
-            <div className="empty-state">
-              <FiUser className="empty-icon" />
-              <h3>No Leave Requests Found</h3>
-              <p>You haven't submitted any leave requests yet.</p>
-              <p>Click "Request Leave" to submit your first request.</p>
-            </div>
-          ) : (
-            filteredHistory.map(leave => (
-              <div key={leave.id} className="table-row">
-                <div className="table-cell">
-                  <div className="leave-type">
-                    <span className="type-icon">{getLeaveTypeIcon(leave.type)}</span>
-                    <span className="type-name">{leave.type}</span>
-                  </div>
-                </div>
-                <div className="table-cell dates">
-                  <div className="date-range">
-                    <span>{leave.startDate}</span>
-                    <span className="to">to</span>
-                    <span>{leave.endDate}</span>
-                  </div>
-                </div>
-                <div className="table-cell days">{leave.days} days</div>
-                <div className="table-cell reason">{leave.reason}</div>
-                <div className="table-cell applied">{leave.appliedOn}</div>
-                <div className="table-cell">{getStatusBadge(leave.status)}</div>
-                <div className="table-cell actions">
-                  <button className="btn-action" onClick={() => handleDeleteRequest(leave.id)}>
-                    <FiTrash2 />
-                  </button>
-                  {leave.status === 'pending' && (
-                    <button className="btn-action delete" onClick={() => handleDeleteRequest(leave.id)}>
-                      <FiTrash2 />
-                    </button>
-                  )}
+          {filteredHistory.map(leave => (
+            <div key={leave.id} className="table-row">
+              <div className="table-cell">
+                <div className="leave-type">
+                  <span className="type-icon">{getLeaveTypeIcon(leave.type)}</span>
+                  <span className="type-name">{leave.type}</span>
                 </div>
               </div>
-            ))
-          )}
+              <div className="table-cell dates">
+                <div className="date-range">
+                  <span>{leave.startDate}</span>
+                  <span className="to">to</span>
+                  <span>{leave.endDate}</span>
+                </div>
+              </div>
+              <div className="table-cell days">{leave.days} days</div>
+              <div className="table-cell reason">{leave.reason}</div>
+              <div className="table-cell applied">{leave.appliedOn}</div>
+              <div className="table-cell">{getStatusBadge(leave.status)}</div>
+              <div className="table-cell actions">
+                <button className="btn-action" onClick={() => handleDeleteRequest(leave.id)}>
+                  <FiTrash2 />
+                </button>
+                {leave.status === 'pending' && (
+                  <button className="btn-action delete" onClick={() => handleDeleteRequest(leave.id)}>
+                    <FiTrash2 />
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
