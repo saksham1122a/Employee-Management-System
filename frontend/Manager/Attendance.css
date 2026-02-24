@@ -101,6 +101,32 @@
   gap: 0.5rem;
 }
 
+.attendance-points {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.points-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.points-value {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.last-updated {
+  font-size: 0.75rem;
+  color: #718096;
+  font-style: italic;
+}
+
 .btn-small {
   padding: 0.5rem 1rem;
   border: none;
@@ -138,6 +164,18 @@
   background: #c0392b;
 }
 
+.btn-small.btn-disabled {
+  background: #e2e8f0;
+  color: #a0aec0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-small.btn-disabled:hover {
+  background: #e2e8f0;
+  transform: none;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .attendance-grid {
@@ -146,5 +184,71 @@
   
   .attendance-actions {
     flex-direction: column;
+  }
+}
+
+/* Toast Notification Styles */
+.Toastify__toast-container {
+  z-index: 9999;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+
+.Toastify__toast {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+  font-size: 14px;
+  padding: 12px 20px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.Toastify__toast--success {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  border-left: 4px solid #27ae60;
+}
+
+.Toastify__toast--error {
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  border-left: 4px solid #e53e3e;
+}
+
+.Toastify__toast--info {
+  background: linear-gradient(135deg, #667eea 0%, #5a67d8 100%);
+  border-left: 4px solid #667eea;
+}
+
+.Toastify__close-button {
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1;
+}
+
+.Toastify__progress-bar {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }

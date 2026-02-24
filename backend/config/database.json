@@ -50,7 +50,24 @@
       "password": "$2b$10$u6i.bvGAq.sPQqrPi49MWeaZRBTIrVxw63qD/Uz.hyH/M3KhvPKC6",
       "role": "employee",
       "createdAt": "2026-02-22T14:03:36.483Z",
-      "updatedAt": "2026-02-22T14:03:36.483Z"
+      "updatedAt": "2026-02-22T14:03:36.483Z",
+      "attendance": {
+        "points": 3,
+        "lastUpdated": "2026-02-24",
+        "dailyRecords": {
+          "2026-02-23": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-02-23T13:47:37.529Z"
+          },
+          "2026-02-24": {
+            "status": "Absent",
+            "points": -2,
+            "timestamp": "2026-02-24T03:38:22.905Z"
+          }
+        },
+        "percentage": 50
+      }
     },
     {
       "_id": "7",
@@ -59,7 +76,24 @@
       "password": "$2b$10$568AGpnVFoJg3x8waUqM0.0WPnykmlBl1o6.HPKY/KTdCdRdyLT5y",
       "role": "employee",
       "createdAt": "2026-02-22T14:12:32.879Z",
-      "updatedAt": "2026-02-22T14:12:32.879Z"
+      "updatedAt": "2026-02-22T14:12:32.879Z",
+      "attendance": {
+        "points": 10,
+        "lastUpdated": "2026-02-24",
+        "dailyRecords": {
+          "2026-02-23": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-02-23T14:06:42.556Z"
+          },
+          "2026-02-24": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-02-24T03:38:29.098Z"
+          }
+        },
+        "percentage": 100
+      }
     }
   ],
   "leaveRequests": [
@@ -69,15 +103,18 @@
       "startDate": "2026-02-22",
       "endDate": "2026-02-22",
       "days": 1,
-      "status": "pending",
+      "status": "approved",
       "reason": "Day out with family. Catch you tomorrow!",
       "appliedOn": "2026-02-22",
-      "approvedBy": "--",
-      "approvedOn": "--",
+      "approvedBy": "Manager User",
+      "approvedOn": "2026-02-23",
       "employeeId": "7",
+      "employeeName": "Saksham Nanda",
+      "employeeEmail": "saksham@example.com",
       "emergencyContact": "Saksham ",
       "emergencyPhone": "6006915762",
-      "attachment": "Har Har Mahadev.jpeg"
+      "attachment": "Har Har Mahadev.html",
+      "rejectionReason": null
     }
   ]
 }

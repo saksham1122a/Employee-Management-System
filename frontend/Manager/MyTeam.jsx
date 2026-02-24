@@ -43,14 +43,14 @@ const MyTeam = () => {
         // Filter to show only employees (not admins/managers)
         const employeeUsers = usersData.filter(user => user.role === 'employee');
         
-        // Format the data for display
+        // Format data for display
         const formattedEmployees = employeeUsers.map(user => ({
           id: user.id || user._id,
           name: user.name,
           email: user.email,
           department: user.department || 'General',
           status: user.status || 'Active',
-          attendance: user.attendance || '100%',
+          attendance: user.attendance?.percentage || '100%',
           joinDate: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : '2024-01-01'
         }));
         

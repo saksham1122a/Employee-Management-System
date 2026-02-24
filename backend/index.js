@@ -26,6 +26,12 @@ app.use(cors({
 
 app.use(express.json());
 
+// Serve static files from uploads folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve thumbnails separately
+app.use('/thumbnails', express.static(path.join(__dirname, 'uploads')));
+
 // Connect to database
 connectDB()
   .then(() => {

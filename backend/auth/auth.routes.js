@@ -19,8 +19,9 @@
 
 
 const express = require("express");
+const path = require("path");
 
-const { registerUser, loginUser, updateUserName, getAllUsers, createUser, updateUser, deleteUser, getAllEmployees, createLeaveRequest, getLeaveRequests, updateLeaveRequest, deleteLeaveRequest } = require("./auth.controller.js");
+const { registerUser, loginUser, updateUserName, getAllUsers, createUser, updateUser, deleteUser, getAllEmployees, createLeaveRequest, getLeaveRequests, getAllLeaveRequests, updateLeaveRequest, deleteLeaveRequest, updateAttendance } = require("./auth.controller.js");
 
 const { authMiddleware, requireAdmin } = require("./auth.middleware.js");
 
@@ -63,8 +64,12 @@ router.get("/employees", authMiddleware, getAllEmployees);
 // Leave management routes
 router.post("/leave/request", authMiddleware, createLeaveRequest);
 router.get("/leave/requests", authMiddleware, getLeaveRequests);
+router.get("/leave/requests/all", authMiddleware, getAllLeaveRequests);
 router.put("/leave/requests/:id", authMiddleware, updateLeaveRequest);
 router.delete("/leave/requests/:id", authMiddleware, deleteLeaveRequest);
+
+// Attendance management routes
+router.put("/attendance", authMiddleware, updateAttendance);
 
 
 module.exports = router;

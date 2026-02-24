@@ -376,6 +376,105 @@ const updateLeaveRequest = async (req, res) => {
   }
 };
 
+const getAllLeaveRequests = async (req, res) => {
+  try {
+    const data = loadData();
+    
+    // Get all leave requests for managers to view
+    const allLeaveRequests = data.leaveRequests || [];
+    
+    res.status(200).json(allLeaveRequests);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const updateAttendance = async (req, res) => {
+  try {
+    const { employeeId, status, points } = req.body;
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const data = loadData();
+    
+    // Find the employee
+    const employee = data.users.find(u => u._id === employeeId || u.id === employeeId);
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found." });
+    }
+
+    // Initialize attendance tracking if not exists
+    if (!employee.attendance) {
+      employee.attendance = {
+        points: 0,
+        lastUpdated: new Date().toISOString().split('T')[0],
+        dailyRecords: {}
+      };
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Check if attendance for today has already been marked
+    if (employee.attendance.dailyRecords[today]) {
+      return res.status(400).json({ 
+        message: "Attendance for today has already been marked.",
+        currentAttendance: employee.attendance.dailyRecords[today]
+      });
+    }
+
+    // Update attendance based on status
+    let pointsChange = 0;
+    switch (status) {
+      case 'Present':
+        pointsChange = 5; // Add 5 points for present
+        break;
+      case 'Late':
+        pointsChange = 3; // Add 3 points for late
+        break;
+      case 'Absent':
+        pointsChange = -2; // Deduct 2 points for absent
+        break;
+      default:
+        pointsChange = 0;
+    }
+
+    // Update points and record
+    employee.attendance.points += pointsChange;
+    employee.attendance.lastUpdated = today;
+    employee.attendance.dailyRecords[today] = {
+      status: status,
+      points: pointsChange,
+      timestamp: new Date().toISOString()
+    };
+
+    // Calculate attendance percentage
+    const totalDays = Object.keys(employee.attendance.dailyRecords).length;
+    const presentDays = Object.values(employee.attendance.dailyRecords).filter(record => 
+      record.status === 'Present' || record.status === 'Late'
+    ).length;
+    employee.attendance.percentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
+
+    saveData(data);
+    
+    res.status(200).json({
+      message: "Attendance updated successfully",
+      employee: {
+        id: employee._id || employee.id,
+        name: employee.name,
+        attendance: {
+          points: employee.attendance.points,
+          percentage: employee.attendance.percentage,
+          lastUpdated: employee.attendance.lastUpdated,
+          todayStatus: status,
+          todayPoints: pointsChange
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const deleteLeaveRequest = async (req, res) => {
   try {
     const { id } = req.params;
@@ -416,12 +515,14 @@ module.exports = {
   loginUser,
   updateUserName,
   getAllUsers,
-  getAllEmployees,
   createUser,
   updateUser,
   deleteUser,
+  getAllEmployees,
   createLeaveRequest,
   getLeaveRequests,
+  getAllLeaveRequests,
   updateLeaveRequest,
   deleteLeaveRequest,
+  updateAttendance
 };
