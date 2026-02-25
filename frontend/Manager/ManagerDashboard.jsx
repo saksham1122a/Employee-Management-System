@@ -20,7 +20,7 @@ import MyTeam from './MyTeam';
 import Attendance from './Attendance';
 import LeaveRequest from './LeaveRequest';
 import Performance from './Performance';
-import Reports from './Reports';
+import Tasks from './Tasks';
 
 const ManagerDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -190,7 +190,7 @@ const ManagerDashboard = () => {
     { id: 'attendance', label: 'Attendance', icon: <FiCalendar /> },
     { id: 'leaves', label: 'Leave Requests', icon: <FiCalendar /> },
     { id: 'performance', label: 'Performance', icon: <FiBarChart2 /> },
-    { id: 'reports', label: 'Reports', icon: <FiTrendingUp /> },
+    { id: 'tasks', label: 'Tasks', icon: <FiTrendingUp /> },
     { id: 'settings', label: 'Settings', icon: <FiSettings /> }
   ];
 
@@ -333,8 +333,8 @@ const ManagerDashboard = () => {
       case 'performance':
         return <Performance />;
 
-      case 'reports':
-        return <Reports />;
+      case 'tasks':
+        return <Tasks />;
 
       default:
         return (

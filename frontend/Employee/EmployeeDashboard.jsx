@@ -25,9 +25,6 @@ const EmployeeDashboard = () => {
       <aside className={`emp-sidebar ${open ? "open" : "closed"}`}>
         <div className="sidebar-top">
           <h2>{open ? "Employee Portal" : "EP"}</h2>
-          <button onClick={() => setOpen(!open)}>
-            {open ? <FiX /> : <FiMenu />}
-          </button>
         </div>
 
         <nav className="sidebar-menu">

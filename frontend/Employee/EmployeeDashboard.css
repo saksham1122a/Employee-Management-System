@@ -8,12 +8,14 @@
 /* Sidebar */
 .emp-sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #5dade2, #3498db);
+  background: #000000;
   color: white;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+  border-right: 1px solid #333;
 }
 
 .emp-sidebar.closed {
