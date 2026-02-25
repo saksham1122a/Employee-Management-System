@@ -12,7 +12,6 @@ import {
   FiDownload,
   FiBell,
   FiMenu,
-  FiX,
   FiUserCheck,
   FiCalendar
 } from 'react-icons/fi';
@@ -20,6 +19,8 @@ import './ManagerDashboard.css';
 import MyTeam from './MyTeam';
 import Attendance from './Attendance';
 import LeaveRequest from './LeaveRequest';
+import Performance from './Performance';
+import Reports from './Reports';
 
 const ManagerDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -28,19 +29,160 @@ const ManagerDashboard = () => {
     totalEmployees: 0,
     presentToday: 0,
     pendingLeaves: 0,
-    teamPerformance: 0
+    teamPerformance: 0,
+    monthlyGrowth: 0,
+    attendancePercentage: 0,
+    performanceImprovement: 0
   });
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
   const navigate = useNavigate();
 
+  // Real-time data fetching
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        setError('Please login to view dashboard data');
+        setLoading(false);
+        return;
+      }
+      
+      // Fetch employees data
+      const employeesResponse = await fetch('http://localhost:5000/api/auth/employees', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      // Fetch leave requests
+      const leavesResponse = await fetch('http://localhost:5000/api/auth/leave/requests', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (employeesResponse.ok && leavesResponse.ok) {
+        const employeesData = await employeesResponse.json();
+        const leavesData = await leavesResponse.json();
+        
+        // Calculate real-time stats
+        const totalEmployees = employeesData.filter(emp => emp.role === 'employee').length;
+        const presentToday = employeesData.filter(emp => 
+          emp.role === 'employee' && 
+          emp.attendance?.dailyRecords?.[new Date().toISOString().split('T')[0]]?.status === 'Present'
+        ).length;
+        
+        const pendingLeaves = leavesData.filter(leave => leave.status === 'pending').length;
+        
+        // Calculate team performance (average attendance percentage)
+        const teamPerformance = employeesData
+          .filter(emp => emp.role === 'employee')
+          .reduce((acc, emp) => acc + (emp.attendance?.percentage || 0), 0) / totalEmployees || 0;
+        
+        // Calculate monthly growth (new employees this month)
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        const newThisMonth = employeesData.filter(emp => {
+          const joinDate = new Date(emp.createdAt);
+          return emp.role === 'employee' && 
+                 joinDate.getMonth() === currentMonth && 
+                 joinDate.getFullYear() === currentYear;
+        }).length;
+        
+        // Calculate attendance percentage
+        const attendancePercentage = totalEmployees > 0 ? Math.round((presentToday / totalEmployees) * 100) : 0;
+        
+        // Calculate performance improvement (mock data for now)
+        const performanceImprovement = 5; // This could be calculated from historical data
+        
+        setStats({
+          totalEmployees,
+          presentToday,
+          pendingLeaves,
+          teamPerformance: Math.round(teamPerformance),
+          monthlyGrowth: newThisMonth,
+          attendancePercentage,
+          performanceImprovement
+        });
+        
+        // Generate recent activities from real data
+        const activities = [];
+        
+        // Add attendance marking activities
+        const today = new Date().toISOString().split('T')[0];
+        employeesData.forEach((emp, index) => {
+          if (emp.attendance?.dailyRecords?.[today]) {
+            activities.push({
+              id: `attendance-${emp.id || index}`,
+              action: `Attendance marked for ${emp.name}`,
+              user: emp.name,
+              time: 'Today',
+              icon: <FiCalendar />,
+              color: '#2ecc71'
+            });
+          }
+        });
+        
+        // Add leave request activities
+        leavesData.slice(-3).forEach((leave, index) => {
+          activities.push({
+            id: `leave-${leave.id || index}`,
+            action: `Leave request ${leave.status}`,
+            user: leave.employeeName,
+            time: new Date(leave.appliedOn).toLocaleDateString(),
+            icon: leave.status === 'approved' ? <FiCheckCircle /> : <FiCalendar />,
+            color: leave.status === 'approved' ? '#3498db' : '#f39c12'
+          });
+        });
+        
+        // Add new employee activities
+        employeesData
+          .filter(emp => emp.role === 'employee')
+          .slice(-2)
+          .forEach((emp, index) => {
+            activities.push({
+              id: `new-${emp.id || index}`,
+              action: 'New team member joined',
+              user: emp.name,
+              time: new Date(emp.createdAt).toLocaleDateString(),
+              icon: <FiUserCheck />,
+              color: '#9b59b6'
+            });
+          });
+        
+        setRecentActivities(activities.slice(0, 4));
+        setLastUpdated(new Date());
+        setLoading(false);
+      } else {
+        throw new Error('Failed to fetch dashboard data');
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setError('Failed to load dashboard data');
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Simulate fetching stats
-    setStats({
-      totalEmployees: 5,
-      presentToday: 3,
-      pendingLeaves: 2,
-      teamPerformance: 92
-    });
+    fetchDashboardData();
+    
+    // Set up real-time updates every 30 seconds
+    const interval = setInterval(fetchDashboardData, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
+
+  // Manual refresh function
+  const refreshData = () => {
+    fetchDashboardData();
+  };
 
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: <FiHome /> },
@@ -58,98 +200,124 @@ const ManagerDashboard = () => {
     { label: 'Team Report', icon: <FiDownload />, action: () => console.log('Generate team report') }
   ];
 
-  const recentActivities = [
-    { id: 1, action: 'Attendance marked for team', user: 'System', time: '2 hours ago', icon: <FiCalendar />, color: '#2ecc71' },
-    { id: 2, action: 'Leave request approved', user: 'Jane Smith', time: '4 hours ago', icon: <FiCheckCircle />, color: '#3498db' },
-    { id: 3, action: 'New team member joined', user: 'Tom Brown', time: '6 hours ago', icon: <FiUserCheck />, color: '#9b59b6' },
-    { id: 4, action: 'Performance review completed', user: 'System', time: '8 hours ago', icon: <FiActivity />, color: '#f39c12' }
-  ];
-
   const renderContent = () => {
     switch(activeTab) {
       case 'overview':
         return (
           <div className="dashboard-content">
-            <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-icon">
-                  <FiUsers />
-                </div>
-                <div className="stat-info">
-                  <h3>{stats.totalEmployees}</h3>
-                  <p>Total Employees</p>
-                  <span className="stat-change positive">+2 this month</span>
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon">
-                  <FiUserCheck />
-                </div>
-                <div className="stat-info">
-                  <h3>{stats.presentToday}</h3>
-                  <p>Present Today</p>
-                  <span className="stat-change positive">85% attendance</span>
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon">
-                  <FiCalendar />
-                </div>
-                <div className="stat-info">
-                  <h3>{stats.pendingLeaves}</h3>
-                  <p>Pending Leaves</p>
-                  <span className="stat-change neutral">2 requests</span>
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon">
-                  <FiTrendingUp />
-                </div>
-                <div className="stat-info">
-                  <h3>{stats.teamPerformance}%</h3>
-                  <p>Team Performance</p>
-                  <span className="stat-change positive">+5% improvement</span>
-                </div>
-              </div>
+            {/* Real-time indicator */}
+            <div className="real-time-indicator">
+              <div className="real-time-dot"></div>
+              <span>Live Data</span>
+              <span className="last-updated">Last updated: {lastUpdated.toLocaleTimeString()}</span>
+              <button className="refresh-btn" onClick={refreshData}>
+                <FiActivity /> Refresh
+              </button>
             </div>
 
-            <div className="dashboard-grid">
-              <div className="card">
-                <div className="card-header">
-                  <h3>Recent Activities</h3>
-                  <button className="btn-icon">
-                    <FiActivity />
-                  </button>
-                </div>
-                <div className="activity-list">
-                  {recentActivities.map(activity => (
-                    <div key={activity.id} className="activity-item">
-                      <div className="activity-icon" style={{ color: activity.color }}>
-                        {activity.icon}
-                      </div>
-                      <div className="activity-details">
-                        <p className="activity-action">{activity.action}</p>
-                        <p className="activity-meta">{activity.user} • {activity.time}</p>
-                      </div>
+            {loading ? (
+              <div className="loading-state">
+                <div className="loading-spinner"></div>
+                <p>Loading real-time data...</p>
+              </div>
+            ) : error ? (
+              <div className="error-state">
+                <h3>Error</h3>
+                <p>{error}</p>
+                <button className="btn-primary" onClick={refreshData}>Retry</button>
+              </div>
+            ) : (
+              <>
+                <div className="stats-grid">
+                  <div className="stat-card">
+                    <div className="stat-icon">
+                      <FiUsers />
                     </div>
-                  ))}
+                    <div className="stat-info">
+                      <h3>{stats.totalEmployees}</h3>
+                      <p>Total Employees</p>
+                      <span className="stat-change positive">
+                        {stats.monthlyGrowth > 0 ? `+${stats.monthlyGrowth} this month` : 'No new this month'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">
+                      <FiUserCheck />
+                    </div>
+                    <div className="stat-info">
+                      <h3>{stats.presentToday}</h3>
+                      <p>Present Today</p>
+                      <span className="stat-change positive">{stats.attendancePercentage}% attendance</span>
+                    </div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">
+                      <FiCalendar />
+                    </div>
+                    <div className="stat-info">
+                      <h3>{stats.pendingLeaves}</h3>
+                      <p>Pending Leaves</p>
+                      <span className="stat-change neutral">{stats.pendingLeaves} requests</span>
+                    </div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-icon">
+                      <FiTrendingUp />
+                    </div>
+                    <div className="stat-info">
+                      <h3>{stats.teamPerformance}%</h3>
+                      <p>Team Performance</p>
+                      <span className="stat-change positive">+{stats.performanceImprovement}% improvement</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="card">
-                <div className="card-header">
-                  <h3>Quick Actions</h3>
+                <div className="dashboard-grid">
+                  <div className="card">
+                    <div className="card-header">
+                      <h3>Recent Activities</h3>
+                      <button className="btn-icon" onClick={refreshData}>
+                        <FiActivity />
+                      </button>
+                    </div>
+                    <div className="activity-list">
+                      {recentActivities.length > 0 ? (
+                        recentActivities.map(activity => (
+                          <div key={activity.id} className="activity-item">
+                            <div className="activity-icon" style={{ color: activity.color }}>
+                              {activity.icon}
+                            </div>
+                            <div className="activity-details">
+                              <p className="activity-action">{activity.action}</p>
+                              <p className="activity-meta">{activity.user} • {activity.time}</p>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="no-activities">
+                          <p>No recent activities</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <div className="card-header">
+                      <h3>Quick Actions</h3>
+                    </div>
+                    <div className="quick-actions-grid">
+                      {quickActions.map((action, index) => (
+                        <button key={index} className="quick-action-btn" onClick={action.action}>
+                          <div className="action-icon">{action.icon}</div>
+                          <span>{action.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="quick-actions-grid">
-                  {quickActions.map((action, index) => (
-                    <button key={index} className="quick-action-btn" onClick={action.action}>
-                      <div className="action-icon">{action.icon}</div>
-                      <span>{action.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+              </>
+            )}
           </div>
         );
 
@@ -161,6 +329,12 @@ const ManagerDashboard = () => {
 
       case 'leaves':
         return <LeaveRequest />;
+
+      case 'performance':
+        return <Performance />;
+
+      case 'reports':
+        return <Reports />;
 
       default:
         return (
@@ -193,7 +367,7 @@ const ManagerDashboard = () => {
             className="sidebar-toggle"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
-            {sidebarOpen ? <FiX /> : <FiMenu />}
+            <FiMenu />
           </button>
         </div>
         
@@ -223,33 +397,6 @@ const ManagerDashboard = () => {
 
       {/* Main Content */}
       <div className="main-content">
-        {/* Header */}
-        <header className="dashboard-header">
-          <div className="header-left">
-            <button 
-              className="mobile-menu-toggle"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-              <FiMenu />
-            </button>
-            <h1>Manager Dashboard</h1>
-          </div>
-          
-          <div className="header-right">
-            <button className="notification-btn">
-              <FiBell />
-              <span className="notification-badge">3</span>
-            </button>
-            <div className="user-profile">
-              <div className="user-avatar">M</div>
-              <div className="user-info">
-                <span className="user-name">Manager User</span>
-                <span className="user-role">Team Manager</span>
-              </div>
-            </div>
-          </div>
-        </header>
-
         {/* Content */}
         <main className="dashboard-main">
           {renderContent()}
