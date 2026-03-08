@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiArrowRight } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import videoSource from '../images/From KlickPin CF vector animation video nel 2025 _ Video.mp4';
 import '../StyleSheets/HeroSection.css';
 
@@ -20,9 +21,9 @@ const HeroSection = () => {
                   Get Started
                   <FiArrowRight className="cta-icon" />
                 </button>
-                <a href="#learn-more" className="learn-more">
+                <Link to="/learn-more" className="learn-more">
                   Learn more about us <span>→</span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

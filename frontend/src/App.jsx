@@ -8,6 +8,7 @@ import Login from './Components/Login';
 import Signup from './Components/Signup';
 import Footer from './Components/Footer';
 import ForgetPassword from './Components/ForgetPassword';
+import LearnMore from './Components/LearnMore';
 import AdminDashboard from '../admin/AdminDashboard';
 import UserManagement from '../admin/User';
 import ManagerDashboard from '../Manager/ManagerDashboard';
@@ -34,6 +35,7 @@ function App() {
   <Route path="/signup" element={<Signup />} />
   <Route path="/about" element={<About />} />
   <Route path="/contact" element={<Contact />} />
+  <Route path="/learn-more" element={<LearnMore />} />
   <Route path="/forgetpassword" element={<ForgetPassword />} />
   
   {/* Admin routes */}

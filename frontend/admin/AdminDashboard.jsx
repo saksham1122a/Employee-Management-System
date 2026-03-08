@@ -26,6 +26,7 @@ import {
 } from 'react-icons/fi';
 import '../admin/AdminDashboard.css';
 import UserManagement from './User';
+import Navbar from '../src/Components/Navbar';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -40,7 +41,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate fetching stats (without user data)
+   
     setStats({
       totalUsers: 4,
       activeUsers: 3,
@@ -226,29 +227,7 @@ const AdminDashboard = () => {
       <div className="main-content">
         {/* Header */}
         <header className="dashboard-header">
-          <div className="header-left">
-            <button 
-              className="mobile-menu-toggle"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-              <FiMenu />
-            </button>
-            <h1>Admin Dashboard</h1>
-          </div>
-          
-          <div className="header-right">
-            <button className="notification-btn">
-              <FiBell />
-              <span className="notification-badge">3</span>
-            </button>
-            <div className="user-profile">
-              <div className="user-avatar">A</div>
-              <div className="user-info">
-                <span className="user-name">Admin User</span>
-                <span className="user-role">Administrator</span>
-              </div>
-            </div>
-          </div>
+          <Navbar />
         </header>
 
         {/* Content */}
