@@ -38,7 +38,7 @@ const Footer = () => {
             {/* Company Info */}
             <div className="footer-column company-info">
               <div className="footer-logo">
-                <Link to="/">TravelTail</Link>
+                <Link to="/">TEAMBUDDY</Link>
               </div>
 
               <p className="footer-description">

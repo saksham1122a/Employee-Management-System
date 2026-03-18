@@ -17,6 +17,8 @@ process.env.JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-here-change-
 
 const app = express();
 
+// CORS = Cross-Origin Resource Sharing
+
 app.use(cors({
   origin: ["http://localhost:5173", "http://localhost:5174"],
   credentials: true,

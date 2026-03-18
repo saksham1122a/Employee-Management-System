@@ -507,12 +507,18 @@
 .modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 2rem 2rem 1rem;
   border-bottom: 1px solid var(--light-gray);
 }
 
-.modal-header h2 {
+.modal-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal-title-section h2 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
@@ -596,6 +602,292 @@
   gap: 1rem;
   padding: 1rem 2rem 2rem;
   border-top: 1px solid var(--light-gray);
+}
+
+/* Real-time Task Indicator */
+.real-time-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(39, 174, 96, 0.1);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #27ae60;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: #27ae60;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.real-time-text {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.task-card.real-time {
+  border: 2px solid rgba(39, 174, 96, 0.3);
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.05) 0%, rgba(255, 255, 255, 0.9) 100%);
+  box-shadow: 0 0 20px rgba(39, 174, 96, 0.1);
+  animation: realTimeGlow 3s ease-in-out infinite;
+}
+
+/* Real-time animations */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+@keyframes realTimeGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(39, 174, 96, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(39, 174, 96, 0.2);
+  }
+}
+
+/* Enhanced Employee Dropdown */
+.employee-select-container {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.employee-select {
+  flex: 1;
+  position: relative;
+}
+
+.refresh-employees-btn {
+  padding: 0.5rem;
+  border: 1px solid var(--light-gray);
+  border-radius: 8px;
+  background: var(--white);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.refresh-employees-btn:hover {
+  background: var(--primary);
+  color: white;
+  transform: rotate(180deg);
+}
+
+.refresh-employees-btn:active {
+  transform: rotate(180deg) scale(0.95);
+}
+
+.selected-employee-info {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(39, 174, 96, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(39, 174, 96, 0.2);
+  animation: slideInUp 0.3s ease;
+}
+
+.employee-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.employee-email,
+.employee-dept,
+.employee-status {
+  font-size: 0.8rem;
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.employee-email:hover,
+.employee-dept:hover {
+  color: var(--primary);
+}
+
+.employee-status {
+  font-weight: 600;
+}
+
+.employee-status.active {
+  color: #27ae60;
+}
+
+.employee-status.inactive,
+.employee-status.suspended {
+  color: #e74c3c;
+}
+
+.no-employees-warning {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(243, 156, 18, 0.1);
+  border: 1px solid rgba(243, 156, 18, 0.3);
+  border-radius: 6px;
+  color: #f39c12;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  animation: slideInUp 0.3s ease;
+}
+
+.debug-btn {
+  padding: 0.25rem 0.5rem;
+  background: rgba(52, 152, 219, 0.1);
+  border: 1px solid rgba(52, 152, 219, 0.3);
+  border-radius: 4px;
+  color: #3498db;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.debug-btn:hover {
+  background: #3498db;
+  color: white;
+  transform: scale(1.05);
+}
+
+.real-time-employee-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(39, 174, 96, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  color: #27ae60;
+  margin-left: 0.5rem;
+  animation: pulse 2s infinite;
+}
+
+/* Enhanced Action Buttons */
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.action-btn.edit {
+  background: rgba(52, 152, 219, 0.1);
+  color: var(--info);
+}
+
+.action-btn.edit:hover {
+  background: var(--info);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.action-btn.delete {
+  background: rgba(231, 76, 60, 0.1);
+  color: var(--danger);
+}
+
+.action-btn.delete:hover {
+  background: var(--danger);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.action-btn span {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.action-btn:hover span {
+  transform: translateX(2px);
+}
+
+/* Enhanced Task Card Hover Effects */
+.task-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.task-card.real-time:hover {
+  box-shadow: 0 12px 35px rgba(39, 174, 96, 0.25);
+}
+
+/* Real-time sync notification */
+.sync-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(39, 174, 96, 0.95);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(39, 174, 96, 0.3);
+  z-index: 1000;
+  animation: slideInRight 0.3s ease, slideOutRight 0.3s ease 2.7s;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
 
 /* Responsive Design */

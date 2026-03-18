@@ -191,7 +191,8 @@ const ManagerDashboard = () => {
     { id: 'leaves', label: 'Leave Requests', icon: <FiCalendar /> },
     { id: 'performance', label: 'Performance', icon: <FiBarChart2 /> },
     { id: 'tasks', label: 'Tasks', icon: <FiTrendingUp /> },
-    { id: 'settings', label: 'Settings', icon: <FiSettings /> }
+    { id: 'settings', label: 'Settings', icon: <FiSettings /> },
+    { id: 'logout', label: 'Logout', icon: <FiLogOut />, isLogout: true }
   ];
 
   const quickActions = [
@@ -349,8 +350,24 @@ const ManagerDashboard = () => {
   };
 
   const handleLogout = () => {
-    localStorage.clear();
-    sessionStorage.clear();
+    // Preserve important data before clearing
+    const tasksData = localStorage.getItem('managerTasks');
+    const employeesData = localStorage.getItem('employees');
+    
+    // Clear authentication data only
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Restore preserved data
+    if (tasksData) {
+      localStorage.setItem('managerTasks', tasksData);
+    }
+    if (employeesData) {
+      localStorage.setItem('employees', employeesData);
+    }
+    
     navigate('/login');
   };
 
@@ -376,8 +393,8 @@ const ManagerDashboard = () => {
             {menuItems.map(item => (
               <li key={item.id}>
                 <button
-                  className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
-                  onClick={() => setActiveTab(item.id)}
+                  className={`nav-item ${activeTab === item.id ? 'active' : ''} ${item.isLogout ? 'logout-item' : ''}`}
+                  onClick={() => item.isLogout ? handleLogout() : setActiveTab(item.id)}
                 >
                   <span className="nav-icon">{item.icon}</span>
                   <span className="nav-label">{item.label}</span>

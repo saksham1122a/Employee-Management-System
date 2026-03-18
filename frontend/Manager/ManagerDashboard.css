@@ -233,6 +233,17 @@
   border-left: 4px solid var(--secondary);
 }
 
+.nav-item.logout-item {
+  color: var(--danger);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 0.5rem;
+}
+
+.nav-item.logout-item:hover {
+  background: rgba(231, 76, 60, 0.2);
+  color: white;
+}
+
 .nav-icon {
   font-size: 1.1rem;
   min-width: 20px;
