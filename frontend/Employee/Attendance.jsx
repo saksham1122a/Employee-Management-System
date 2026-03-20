@@ -1,34 +1,30 @@
 import React, { useState, useEffect } from "react";
+import { 
+  FiClock, 
+  FiLogIn, 
+  FiLogOut, 
+  FiCalendar, 
+  FiTrendingUp, 
+  FiActivity,
+  FiUser,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiX
+} from "react-icons/fi";
 import "./Attendance.css";
-import { FiClock, FiLogIn, FiLogOut } from "react-icons/fi";
 
 const Attendance = () => {
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [checkInTime, setCheckInTime] = useState(null);
   const [workingHours, setWorkingHours] = useState("0h 0m");
-  const [attendanceHistory, setAttendanceHistory] = useState([
-    {
-      date: "24 Jan 2026",
-      checkIn: "09:05 AM",
-      checkOut: "06:00 PM",
-      hours: "8h 55m",
-      status: "present"
-    },
-    {
-      date: "23 Jan 2026", 
-      checkIn: "09:45 AM",
-      checkOut: "05:30 PM",
-      hours: "7h 45m",
-      status: "late"
-    }
-  ]);
+  const [loading, setLoading] = useState(true);
 
-  // Update current time every minute
+  // Update current time every second
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000);
+    }, 1000);
 
     return () => clearInterval(timer);
   }, []);
@@ -44,61 +40,12 @@ const Attendance = () => {
     }
   }, [currentTime, isCheckedIn, checkInTime]);
 
-  const handleCheckIn = () => {
-    const now = new Date();
-    setCheckInTime(now);
-    setIsCheckedIn(true);
-    
-    // Add today's attendance to history if not already present
-    const today = getTodayDate();
-    const todayExists = attendanceHistory.some(record => record.date === today);
-    
-    if (!todayExists) {
-      const newRecord = {
-        date: today,
-        checkIn: formatTime(now),
-        checkOut: "-",
-        hours: "0h 0m",
-        status: "present"
-      };
-      
-      setAttendanceHistory([newRecord, ...attendanceHistory]);
-    }
-  };
-
-  const handleCheckOut = () => {
-    const now = new Date();
-    setIsCheckedIn(false);
-    
-    // Update today's attendance record
-    const today = getTodayDate();
-    
-    const updatedHistory = attendanceHistory.map(record => {
-      if (record.date === today) {
-        const diff = now - checkInTime;
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        
-        // Determine status based on check-in time
-        let status = "present";
-        if (checkInTime.getHours() > 9 || (checkInTime.getHours() === 9 && checkInTime.getMinutes() > 15)) {
-          status = "late";
-        }
-        
-        return {
-          ...record,
-          checkOut: formatTime(now),
-          hours: `${hours}h ${minutes}m`,
-          status: status
-        };
-      }
-      return record;
-    });
-    
-    setAttendanceHistory(updatedHistory);
-    setWorkingHours("0h 0m");
-    setCheckInTime(null);
-  };
+  // Initialize with mock data
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, []);
 
   const formatTime = (date) => {
     if (!date) return '--:--';
@@ -117,95 +64,164 @@ const Attendance = () => {
     }).replace(',', '');
   };
 
+  const handleCheckIn = () => {
+    const now = new Date();
+    setCheckInTime(now);
+    setIsCheckedIn(true);
+  };
+
+  const handleCheckOut = () => {
+    setIsCheckedIn(false);
+    setWorkingHours("0h 0m");
+    setCheckInTime(null);
+  };
+
+  if (loading) {
+    return (
+      <div className="attendance-container">
+        <div className="loading-spinner">
+          <FiActivity className="spinner-icon" />
+          <p>Loading attendance data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="attendance">
-      {/* Header */}
+    <div className="attendance-container">
       <div className="attendance-header">
-        <div>
-          <h1>Attendance</h1>
-          <p>Track your daily work activity</p>
-        </div>
-
-        <div className="attendance-actions">
-          <button 
-            className={`checkin-btn ${isCheckedIn ? 'disabled' : ''}`}
-            onClick={handleCheckIn}
-            disabled={isCheckedIn}
-          >
-            <FiLogIn /> {isCheckedIn ? 'Checked In' : 'Check In'}
-          </button>
-          <button 
-            className={`checkout-btn ${!isCheckedIn ? 'disabled' : ''}`}
-            onClick={handleCheckOut}
-            disabled={!isCheckedIn}
-          >
-            <FiLogOut /> {isCheckedIn ? 'Check Out' : 'Checked Out'}
-          </button>
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <FiClock />
-          <div>
-            <span>Working Hours</span>
-            <h3>{workingHours}</h3>
+        <div className="header-content">
+          <div className="greeting-section">
+            <h1 className="greeting">Attendance Dashboard</h1>
+            <p className="subtitle">Real-time attendance tracking and analytics</p>
           </div>
-        </div>
-
-        <div className="stat-card">
-          <span className={`status ${isCheckedIn ? 'present' : 'absent'}`}>
-            {isCheckedIn ? 'Present' : 'Absent'}
-          </span>
-          <div>
-            <span>Status</span>
-            <h3>Today</h3>
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <span className={`status ${!isCheckedIn && checkInTime ? 'ontime' : 'late'}`}>
-            {isCheckedIn ? formatTime(checkInTime) : 'Not Checked In'}
-          </span>
-          <div>
-            <span>Check-in</span>
-            <h3>{isCheckedIn ? formatTime(checkInTime) : '--:--'}</h3>
+          
+          <div className="time-display">
+            <div className="current-time">
+              <FiClock className="time-icon" />
+              <span>{formatTime(currentTime)}</span>
+            </div>
+            <div className="date-display">
+              <FiCalendar />
+              <span>{getTodayDate()}</span>
+            </div>
+            <div className="sync-indicator">
+              <div className="sync-dot active"></div>
+              <span>Live Sync</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* History */}
-      <div className="history-card">
-        <h2>Attendance History</h2>
+      <div className="today-status-card">
+        <div className="status-header">
+          <h2>Today's Status</h2>
+          <div className="status-badge present">
+            <FiCheckCircle />
+            <span>Not Marked</span>
+          </div>
+        </div>
+        
+        <div className="status-content">
+          <div className="working-hours-display">
+            <div className="hours-value">
+              <span className="hours-number">{workingHours}</span>
+              <span className="hours-label">Working Hours</span>
+            </div>
+          </div>
+          
+          <div className="check-times">
+            <div className="time-info">
+              <FiLogIn className="time-icon-in" />
+              <div>
+                <span className="time-label">Check In</span>
+                <span className="time-value">
+                  {checkInTime ? formatTime(checkInTime) : '--:--'}
+                </span>
+              </div>
+            </div>
+            <div className="time-info">
+              <FiLogOut className="time-icon-out" />
+              <div>
+                <span className="time-label">Check Out</span>
+                <span className="time-value">
+                  {isCheckedIn ? 'Working...' : '--:--'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Check In</th>
-              <th>Check Out</th>
-              <th>Hours</th>
-              <th>Status</th>
-            </tr>
-          </thead>
+      <div className="action-section">
+        <button 
+          className={`check-btn checkin-btn ${isCheckedIn ? 'disabled' : ''}`}
+          onClick={handleCheckIn}
+          disabled={isCheckedIn}
+        >
+          <div className="btn-content">
+            <FiLogIn />
+            <span>{isCheckedIn ? 'Already Checked In' : 'Check In'}</span>
+          </div>
+          <div className="btn-bg"></div>
+        </button>
+        
+        <button 
+          className={`check-btn checkout-btn ${!isCheckedIn ? 'disabled' : ''}`}
+          onClick={handleCheckOut}
+          disabled={!isCheckedIn}
+        >
+          <div className="btn-content">
+            <FiLogOut />
+            <span>{!isCheckedIn ? 'Not Checked In' : 'Check Out'}</span>
+          </div>
+          <div className="btn-bg"></div>
+        </button>
+      </div>
 
-          <tbody>
-            {attendanceHistory.map((record, index) => (
-              <tr key={index}>
-                <td>{record.date}</td>
-                <td>{record.checkIn}</td>
-                <td>{record.checkOut}</td>
-                <td>{record.hours}</td>
-                <td>
-                  <span className={`badge ${record.status}`}>
-                    {record.status === 'present' ? 'Present' : record.status === 'late' ? 'Late' : 'Absent'}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="stats-section">
+        <h2 className="section-title">Monthly Overview</h2>
+        <div className="stats-grid">
+          <div className="stat-card present">
+            <div className="stat-icon">
+              <FiCheckCircle />
+            </div>
+            <div className="stat-content">
+              <h3>5</h3>
+              <span>Present Days</span>
+            </div>
+          </div>
+          
+          <div className="stat-card late">
+            <div className="stat-icon">
+              <FiAlertCircle />
+            </div>
+            <div className="stat-content">
+              <h3>3</h3>
+              <span>Late Arrivals</span>
+            </div>
+          </div>
+          
+          <div className="stat-card absent">
+            <div className="stat-icon">
+              <FiX />
+            </div>
+            <div className="stat-content">
+              <h3>2</h3>
+              <span>Absent Days</span>
+            </div>
+          </div>
+          
+          <div className="stat-card percentage">
+            <div className="stat-icon">
+              <FiTrendingUp />
+            </div>
+            <div className="stat-content">
+              <h3>80%</h3>
+              <span>Attendance Rate</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

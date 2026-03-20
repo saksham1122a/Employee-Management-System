@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import OpenAnimation from './Components/OpenAnimation';
 import Navbar from './Components/Navbar';
 import HeroSection from './Components/HeroSection';
 import About from './Components/About';
@@ -18,6 +19,12 @@ import Leave from '../Employee/Leave';
 import './App.css';
 
 function App() {
+  const [loading, setLoading] = useState(true);
+
+  if (loading) {
+    return <OpenAnimation onFinish={() => setLoading(false)} />;
+  }
+
   return (
     <Router>
       <div className="App">

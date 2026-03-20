@@ -26,7 +26,43 @@ const LeaveRequest = () => {
       
       if (response.ok) {
         const data = await response.json();
-        setLeaveRequests(data);
+        console.log('Raw leave requests data:', data);
+        
+        // Enhanced data processing to ensure employee names and images are available
+        const enhancedData = await Promise.all(data.map(async (request) => {
+          try {
+            // First, try to get employee details if we have employeeId or employee field
+            if (request.employeeId || request.employee) {
+              const employeeData = await fetchEmployeeDetails(request.employeeId || request.employee);
+              return {
+                ...request,
+                employeeName: employeeData.name || employeeData.email || 'Unknown Employee',
+                employeeImage: employeeData.profileImage || employeeData.image || null,
+                employeeEmail: employeeData.email,
+                attachmentUrl: request.attachment ? `http://localhost:5000/uploads/${request.attachment}` : null
+              };
+            } else {
+              // Fallback: try to extract name from request data
+              const name = request.employeeName || request.name || request.employee?.name || 'Unknown Employee';
+              return {
+                ...request,
+                employeeName: name,
+                employeeEmail: request.employeeEmail || request.employee?.email || '',
+                attachmentUrl: request.attachment ? `http://localhost:5000/uploads/${request.attachment}` : null
+              };
+            }
+          } catch (error) {
+            console.error('Error processing request:', error);
+            return {
+              ...request,
+              employeeName: request.employeeName || request.name || 'Unknown Employee',
+              attachmentUrl: request.attachment ? `http://localhost:5000/uploads/${request.attachment}` : null
+            };
+          }
+        }));
+        
+        console.log('Enhanced leave requests data:', enhancedData);
+        setLeaveRequests(enhancedData);
         setLoading(false);
       } else {
         setError('Failed to fetch leave requests');
@@ -36,6 +72,59 @@ const LeaveRequest = () => {
       console.error('Error fetching leave requests:', error);
       setError('Network error. Please try again.');
       setLoading(false);
+    }
+  };
+
+  // Fetch employee details to get name and image
+  const fetchEmployeeDetails = async (employeeIdOrEmail) => {
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token) return { name: 'Unknown Employee', email: '', profileImage: null };
+      
+      // Try to find employee by ID first
+      let response = await fetch(`http://localhost:5000/api/auth/employees/${employeeIdOrEmail}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        // If not found by ID, try to find by email in all employees
+        const allEmployeesResponse = await fetch('http://localhost:5000/api/auth/employees', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (allEmployeesResponse.ok) {
+          const allEmployees = await allEmployeesResponse.json();
+          const employee = allEmployees.find(emp => 
+            emp.id === employeeIdOrEmail || 
+            emp.email === employeeIdOrEmail ||
+            emp._id === employeeIdOrEmail
+          );
+          
+          if (employee) {
+            return {
+              name: employee.name || employee.email || 'Unknown Employee',
+              email: employee.email || '',
+              profileImage: employee.profileImage || employee.image || null
+            };
+          }
+        }
+      } else {
+        const employee = await response.json();
+        return {
+          name: employee.name || employee.email || 'Unknown Employee',
+          email: employee.email || '',
+          profileImage: employee.profileImage || employee.image || null
+        };
+      }
+      
+      return { name: 'Unknown Employee', email: '', profileImage: null };
+    } catch (error) {
+      console.error('Error fetching employee details:', error);
+      return { name: 'Unknown Employee', email: '', profileImage: null };
     }
   };
 
@@ -149,26 +238,34 @@ const LeaveRequest = () => {
               <div key={request.id} className="leave-card">
                 <div className="leave-info">
                   <div className="user-avatar" style={{ 
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+                    background: request.employeeImage 
+                      ? `url(${request.employeeImage}) center/cover no-repeat` 
+                      : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '20px',
+                    fontSize: request.employeeImage ? '0' : '20px',
                     fontWeight: 'bold',
                     width: '60px',
                     height: '60px',
                     borderRadius: '50%',
                     boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
                     border: '3px solid #fff',
-                    flexShrink: 0
+                    flexShrink: 0,
+                    position: 'relative'
                   }}>
-                    {request.employeeName?.charAt(0).toUpperCase() || 'E'}
+                    {!request.employeeImage && (request.employeeName?.charAt(0).toUpperCase() || 'E')}
                   </div>
                   <div>
                     <h4 style={{ margin: '0 0 0.5rem 0', color: '#2d3748', fontSize: '1.1rem', fontWeight: '600' }}>
-                      {request.employeeName || 'Unknown Employee'}
+                      {request.employeeName || request.employeeEmail || 'Unknown Employee'}
                     </h4>
+                    {request.employeeEmail && request.employeeName && (
+                      <p style={{ margin: '0 0 0.5rem 0', color: '#718096', fontSize: '0.85rem' }}>
+                        {request.employeeEmail}
+                      </p>
+                    )}
                     <p className="leave-type" style={{ margin: '0.2rem 0', color: '#667eea', fontWeight: '500' }}>
                       {request.type}
                     </p>
@@ -186,10 +283,10 @@ const LeaveRequest = () => {
                             <span>{request.attachment}</span>
                           </div>
                           <div className="attachment-actions">
-                            {request.attachment.toLowerCase().match(/\.(jpg|jpeg|png|gif|html)$/i) && (
+                            {request.attachment.toLowerCase().match(/\.(jpg|jpeg|png|gif|html|pdf|doc|docx)$/i) && (
                               <button
                                 className="btn-view-attachment"
-                                onClick={() => window.open(`http://localhost:5000/uploads/${request.attachment}`, '_blank')}
+                                onClick={() => window.open(request.attachmentUrl || `http://localhost:5000/uploads/${request.attachment}`, '_blank')}
                                 title="View attachment"
                               >
                                 <FiEye />
@@ -200,7 +297,7 @@ const LeaveRequest = () => {
                               className="btn-download-attachment"
                               onClick={() => {
                                 const link = document.createElement('a');
-                                link.href = `http://localhost:5000/uploads/${request.attachment}`;
+                                link.href = request.attachmentUrl || `http://localhost:5000/uploads/${request.attachment}`;
                                 link.download = request.attachment;
                                 link.click();
                               }}

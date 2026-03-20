@@ -17,10 +17,10 @@ const HeroSection = () => {
             <div className="hero-text">
               <h1>Empower Your Workforce, Elevate Your Business</h1>
               <div className="cta-container">
-                <button className="cta-button">
+                <Link to="/signup" className="cta-button">
                   Get Started
                   <FiArrowRight className="cta-icon" />
-                </button>
+                </Link>
                 <Link to="/learn-more" className="learn-more">
                   Learn more about us <span>→</span>
                 </Link>

@@ -17,6 +17,7 @@ const EmployeeDashboard = () => {
     if (active === "attendance") return <Attendance />;
     if (active === "tasks") return <Tasks />;
     if (active === "leave") return <Leave />;
+    return <div className="not-found">Page not found</div>;
   };
 
   return (

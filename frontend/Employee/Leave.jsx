@@ -5,7 +5,6 @@ import {
   FiSend, FiFileText, FiUser, FiMail, FiPhone, FiCheck, FiX
 } from 'react-icons/fi';
 import './Leave.css';
-import '../src/Components/Notification.css';
 
 const Leave = () => {
   const [notification, setNotification] = useState(null);

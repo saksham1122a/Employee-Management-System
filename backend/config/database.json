@@ -52,8 +52,8 @@
       "createdAt": "2026-02-22T14:03:36.483Z",
       "updatedAt": "2026-02-22T14:03:36.483Z",
       "attendance": {
-        "points": 16,
-        "lastUpdated": "2026-03-13",
+        "points": 24,
+        "lastUpdated": "2026-03-20",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -84,9 +84,19 @@
             "status": "Absent",
             "points": -2,
             "timestamp": "2026-03-13T07:40:30.023Z"
+          },
+          "2026-03-18": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-03-18T14:09:13.494Z"
+          },
+          "2026-03-20": {
+            "status": "Late",
+            "points": 3,
+            "timestamp": "2026-03-20T08:11:56.812Z"
           }
         },
-        "percentage": 67
+        "percentage": 75
       }
     },
     {
@@ -98,8 +108,8 @@
       "createdAt": "2026-02-22T14:12:32.879Z",
       "updatedAt": "2026-02-22T14:12:32.879Z",
       "attendance": {
-        "points": 23,
-        "lastUpdated": "2026-03-13",
+        "points": 31,
+        "lastUpdated": "2026-03-20",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -130,9 +140,19 @@
             "status": "Absent",
             "points": -2,
             "timestamp": "2026-03-13T07:40:33.056Z"
+          },
+          "2026-03-18": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-03-18T14:09:13.506Z"
+          },
+          "2026-03-20": {
+            "status": "Late",
+            "points": 3,
+            "timestamp": "2026-03-20T08:11:58.333Z"
           }
         },
-        "percentage": 83
+        "percentage": 88
       }
     }
   ],
@@ -155,6 +175,22 @@
       "emergencyPhone": "6006915762",
       "attachment": "Har Har Mahadev.html",
       "rejectionReason": null
+    },
+    {
+      "id": "2",
+      "type": "sick",
+      "startDate": "2026-03-18",
+      "endDate": "2026-03-18",
+      "days": 1,
+      "status": "pending",
+      "reason": "Feeling heavy fever today!",
+      "appliedOn": "2026-03-18",
+      "approvedBy": "--",
+      "approvedOn": "--",
+      "employeeId": "7",
+      "emergencyContact": "Saksham ",
+      "emergencyPhone": "6006915762",
+      "attachment": "Gemini_Generated_Image_m74rflm74rflm74r.png"
     }
   ]
 }

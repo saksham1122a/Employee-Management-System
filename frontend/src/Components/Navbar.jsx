@@ -129,7 +129,9 @@ const Navbar = () => {
     <header className="header">
       <nav className="navbar">
         <div className="nav-container">
-          <Link to="/" className="nav-logo">TeamBuddy</Link>
+          <div className="nav-brand">
+            <Link to="/" className="nav-logo">TeamBuddy</Link>
+          </div>
           
           <div className={`nav-links ${isOpen ? 'active' : ''}`}>
             <Link to="/" className="nav-link">Home</Link>

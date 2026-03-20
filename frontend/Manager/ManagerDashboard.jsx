@@ -191,7 +191,6 @@ const ManagerDashboard = () => {
     { id: 'leaves', label: 'Leave Requests', icon: <FiCalendar /> },
     { id: 'performance', label: 'Performance', icon: <FiBarChart2 /> },
     { id: 'tasks', label: 'Tasks', icon: <FiTrendingUp /> },
-    { id: 'settings', label: 'Settings', icon: <FiSettings /> },
     { id: 'logout', label: 'Logout', icon: <FiLogOut />, isLogout: true }
   ];
 
