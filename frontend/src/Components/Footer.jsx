@@ -89,7 +89,7 @@ const Footer = () => {
               <h3 className="footer-title">Stay Updated</h3>
 
               <p className="newsletter-description">
-                Subscribe to our newsletter for exclusive deals and travel tips.
+                Subscribe to our newsletter for exclusive jobs and employees details.
               </p>
 
               <form className="newsletter-form" onSubmit={handleSubscribe}>

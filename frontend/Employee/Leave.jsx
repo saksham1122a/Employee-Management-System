@@ -336,7 +336,11 @@ const Leave = () => {
   };
 
   return (
-    <div className="leave-container">
+    <div className="leave-container" style={{
+      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+      minHeight: '100vh',
+      padding: '2rem'
+    }}>
       <NotificationComponent />
       <div className="leave-header">
         <h1>Leave Management</h1>
@@ -417,16 +421,6 @@ const Leave = () => {
           </div>
         </div>
       )}
-
-      {/* Request Leave Button */}
-      <div className="request-section">
-        <button 
-          className="btn-request-leave"
-          onClick={() => setShowRequestForm(true)}
-        >
-          <FiPlus /> Request Leave
-        </button>
-      </div>
 
       {/* Leave History */}
       <div className="history-section">

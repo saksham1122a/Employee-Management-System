@@ -6,19 +6,16 @@
   --success: #2ecc71;
   --warning: #f39c12;
   --danger: #e74c3c;
-  --dark: #2b2d42;
-  --light: #f8f9fa;
-  --gray: #6c757d;
-  --light-gray: #e9ecef;
-  --white: #ffffff;
   --sidebar-width: 280px;
   --header-height: 70px;
+  --white: #ffffff;
+  --light-gray: #e9ecef;
 }
 
 .admin-dashboard {
   display: flex;
   min-height: 100vh;
-  background: #f5f7fa;
+  background: var(--light);
 }
 
 /* Sidebar */
@@ -639,4 +636,47 @@
   .table-container {
     overflow-x: scroll;
   }
+}
+
+/* Settings Logout Button Styles */
+.settings-with-logout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.settings-logout-section {
+  margin-top: auto;
+  padding: 2rem;
+  border-top: 1px solid var(--border-color);
+  background: var(--light-color);
+}
+
+.settings-logout-btn {
+  background: linear-gradient(135deg, var(--danger-color), #c53030);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+  margin: 0 auto;
+  max-width: 200px;
+}
+
+.settings-logout-btn:hover {
+  background: linear-gradient(135deg, #c53030, var(--danger-color));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.settings-logout-btn svg {
+  font-size: 1.1rem;
 }

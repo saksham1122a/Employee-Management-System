@@ -20,28 +20,12 @@
     },
     {
       "_id": "3",
-      "name": "Saksham Admin",
+      "name": "Saksham Nanda",
       "email": "sakshamnnda01@gmail.com",
       "password": "sakshamadmin@#",
       "role": "admin",
       "createdAt": "2024-01-15T00:00:00.000Z",
-      "updatedAt": "2024-01-15T00:00:00.000Z"
-    },
-    {
-      "_id": "4",
-      "name": "John Employee",
-      "email": "john.employee@example.com",
-      "password": "$2b$10$Rnv5qo7xAxmAxKalcHXwsuC/FTMoqEnC6fQrqjRbuSmlvkM0nLyI2",
-      "createdAt": "2026-02-22T14:02:09.996Z",
-      "updatedAt": "2026-02-22T14:02:09.996Z"
-    },
-    {
-      "_id": "5",
-      "name": "Jane Employee",
-      "email": "jane.employee@example.com",
-      "password": "$2b$10$Zy25kwp29FHULUO5lBPc0u2R.oc1gShdiBzkENlYr0uXAKmsJep3m",
-      "createdAt": "2026-02-22T14:02:32.293Z",
-      "updatedAt": "2026-02-22T14:02:32.293Z"
+      "updatedAt": "2026-03-20T13:35:20.874Z"
     },
     {
       "_id": "6",
@@ -52,8 +36,8 @@
       "createdAt": "2026-02-22T14:03:36.483Z",
       "updatedAt": "2026-02-22T14:03:36.483Z",
       "attendance": {
-        "points": 24,
-        "lastUpdated": "2026-03-20",
+        "points": 39,
+        "lastUpdated": "2026-03-23",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -94,9 +78,24 @@
             "status": "Late",
             "points": 3,
             "timestamp": "2026-03-20T08:11:56.812Z"
+          },
+          "2026-03-21": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-03-21T07:53:36.562Z"
+          },
+          "2026-03-22": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-03-22T07:35:08.489Z"
+          },
+          "2026-03-23": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-03-23T04:48:37.746Z"
           }
         },
-        "percentage": 75
+        "percentage": 82
       }
     },
     {
@@ -108,8 +107,8 @@
       "createdAt": "2026-02-22T14:12:32.879Z",
       "updatedAt": "2026-02-22T14:12:32.879Z",
       "attendance": {
-        "points": 31,
-        "lastUpdated": "2026-03-20",
+        "points": 46,
+        "lastUpdated": "2026-03-23",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -150,10 +149,34 @@
             "status": "Late",
             "points": 3,
             "timestamp": "2026-03-20T08:11:58.333Z"
+          },
+          "2026-03-21": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-03-21T07:53:36.590Z"
+          },
+          "2026-03-22": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-03-22T07:35:08.515Z"
+          },
+          "2026-03-23": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-03-23T04:48:42.011Z"
           }
         },
-        "percentage": 88
+        "percentage": 91
       }
+    },
+    {
+      "_id": "6",
+      "name": "Samakash Nanda",
+      "email": "sam@gmail.com",
+      "password": "$2b$10$m6Xup2Y1klaaYzaxTCtple.93/WGlUV9y1Auel7BdfWSXNeMcR2Oi",
+      "role": "manager",
+      "createdAt": "2026-03-23T06:24:52.127Z",
+      "updatedAt": "2026-03-23T06:24:52.127Z"
     }
   ],
   "leaveRequests": [

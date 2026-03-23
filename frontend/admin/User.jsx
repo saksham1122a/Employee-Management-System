@@ -3,6 +3,9 @@ import { FiUser, FiMail, FiEdit2, FiTrash2, FiPlus, FiSearch, FiFilter, FiChevro
 import './User.css';
 
 const UserManagement = () => {
+  // Define API base URL
+  const API_BASE_URL = 'http://localhost:5000';
+  
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,7 +64,7 @@ const UserManagement = () => {
       // Try to get a real token from backend
       const getRealToken = async () => {
         try {
-          const response = await fetch(`${API_BASE_URL}/login`, {
+          const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -77,6 +80,9 @@ const UserManagement = () => {
             localStorage.setItem('token', data.token);
             fetchUsers();
             return;
+          } else {
+            const errorData = await response.json();
+            console.error('Login failed:', errorData.message);
           }
         } catch (error) {
           console.error('Failed to get real token:', error);
@@ -115,15 +121,18 @@ const UserManagement = () => {
         return;
       }
       
-      const response = await fetch('http://localhost:5000/api/auth/users', {
+      console.log('Using token:', token.substring(0, 20) + '...');
+      
+      const response = await fetch(`${API_BASE_URL}/api/auth/users`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
       
       if (response.ok) {
         const usersData = await response.json();
-        console.log(' Users fetched from backend:', usersData);
+        console.log('✅ Users fetched from backend:', usersData);
         
         const formattedUsers = usersData.map(user => ({
           id: user.id || user._id,
@@ -136,13 +145,21 @@ const UserManagement = () => {
         setUsers(formattedUsers);
         setLoading(false);
       } else {
-        console.error('Failed to fetch users from backend');
-        setErrorMessage('Failed to load users from backend');
+        const errorData = await response.json();
+        console.error('❌ Failed to fetch users:', errorData);
+        
+        if (response.status === 401) {
+          // Token is invalid, try to get new token
+          localStorage.removeItem('token');
+          setErrorMessage('Session expired. Please login again.');
+        } else {
+          setErrorMessage(errorData.message || 'Failed to load users from backend');
+        }
         setShowErrorModal(true);
         setLoading(false);
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('❌ Error fetching users:', error);
       setErrorMessage('Network error. Please try again.');
       setShowErrorModal(true);
       setLoading(false);
@@ -167,12 +184,19 @@ const UserManagement = () => {
     try {
       console.log('🎯 Adding user to backend:', formData.name);
       
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setErrorMessage('No authentication token. Please login again.');
+        setShowErrorModal(true);
+        return;
+      }
+      
       // Call the real backend API
-      const response = await fetch('http://localhost:5000/api/auth/users', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(formData)
       });
@@ -185,7 +209,7 @@ const UserManagement = () => {
         setSuccessMessage('User added successfully!');
         setShowSuccessModal(true);
         
-        // Add the new user to local state
+        // Add to new user to local state
         const newUser = {
           id: result.id || String(users.length + 1),
           name: formData.name,
@@ -196,12 +220,17 @@ const UserManagement = () => {
         };
         setUsers(prev => [...prev, newUser]);
       } else {
-        setErrorMessage(result.message || 'Error adding user');
+        if (response.status === 401) {
+          setErrorMessage('Session expired. Please login again.');
+          localStorage.removeItem('token');
+        } else {
+          setErrorMessage(result.message || 'Error adding user');
+        }
         setShowErrorModal(true);
       }
     } catch (error) {
-      console.error('Error adding user:', error);
-      setErrorMessage('Error adding user');
+      console.error('❌ Error adding user:', error);
+      setErrorMessage('Network error. Please try again.');
       setShowErrorModal(true);
     }
   };
@@ -217,10 +246,15 @@ const UserManagement = () => {
     setShowEditModal(true);
   };
 
+  const handleDeleteUser = (user) => {
+    setDeletingUser(user);
+    setShowDeleteModal(true);
+  };
+
   const handleUpdateUser = async () => {
-    // Validate form
+    // Validate form - only require name, email, and role for updates
     if (!formData.name || !formData.email || !formData.role) {
-      setErrorMessage('Please fill in all fields');
+      setErrorMessage('Please fill in required fields (Name, Email, Role)');
       setShowErrorModal(true);
       return;
     }
@@ -228,22 +262,29 @@ const UserManagement = () => {
     try {
       console.log('🎯 Updating user in backend:', formData.name);
       
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setErrorMessage('No authentication token. Please login again.');
+        setShowErrorModal(true);
+        return;
+      }
+      
       const updateData = {
         name: formData.name,
         email: formData.email,
         role: formData.role
       };
       
-      // Only include password if it's provided
-      if (formData.password) {
+      // Only include password if it's provided (optional for updates)
+      if (formData.password && formData.password.trim() !== '') {
         updateData.password = formData.password;
       }
       
-      const response = await fetch(`http://localhost:5000/api/auth/users/${editingUser.id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/users/${editingUser.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(updateData)
       });
@@ -257,17 +298,22 @@ const UserManagement = () => {
         setSuccessMessage('User updated successfully!');
         setShowSuccessModal(true);
         
-        // Update the user in the local state
+        // Update user in the local state
         setUsers(prev => prev.map(user => 
           user.id === editingUser.id ? { ...user, ...updateData } : user
         ));
       } else {
-        setErrorMessage(result.message || 'Error updating user');
+        if (response.status === 401) {
+          setErrorMessage('Session expired. Please login again.');
+          localStorage.removeItem('token');
+        } else {
+          setErrorMessage(result.message || 'Error updating user');
+        }
         setShowErrorModal(true);
       }
     } catch (error) {
-      console.error('Error updating user:', error);
-      setErrorMessage('Error updating user');
+      console.error('❌ Error updating user:', error);
+      setErrorMessage('Network error. Please try again.');
       setShowErrorModal(true);
     }
   };
@@ -276,10 +322,17 @@ const UserManagement = () => {
     try {
       console.log('🎯 Deleting user from backend:', deletingUser.name);
       
-      const response = await fetch(`http://localhost:5000/api/auth/users/${deletingUser.id}`, {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setErrorMessage('No authentication token. Please login again.');
+        setShowErrorModal(true);
+        return;
+      }
+      
+      const response = await fetch(`${API_BASE_URL}/api/auth/users/${deletingUser.id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         }
       });
       
@@ -291,10 +344,15 @@ const UserManagement = () => {
         setSuccessMessage('User deleted successfully!');
         setShowSuccessModal(true);
         
-        // Remove the user from the local state
+        // Remove user from the local state
         setUsers(prev => prev.filter(user => user.id !== deletingUser.id));
       } else {
-        setErrorMessage(result.message || 'Error deleting user');
+        if (response.status === 401) {
+          setErrorMessage('Session expired. Please login again.');
+          localStorage.removeItem('token');
+        } else {
+          setErrorMessage(result.message || 'Error deleting user');
+        }
         setShowErrorModal(true);
       }
     } catch (error) {
@@ -374,7 +432,6 @@ const UserManagement = () => {
                 <th>Email</th>
                 <th>Role</th>
                 <th>Status</th>
-                <th>Created</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -400,7 +457,6 @@ const UserManagement = () => {
                       {user.status}
                     </span>
                   </td>
-                  <td>{user.createdAt}</td>
                   <td>
                     <div className="action-buttons">
                       <button 

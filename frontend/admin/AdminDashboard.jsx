@@ -22,10 +22,15 @@ import {
   FiDownload,
   FiBell,
   FiMenu,
-  FiX
+  FiX,
+  FiMessageSquare
 } from 'react-icons/fi';
 import '../admin/AdminDashboard.css';
 import UserManagement from './User';
+import Payroll from './Payroll';
+import Reports from './Reports';
+import Settings from './Setting';
+import Messages from './Messages';
 import Navbar from '../src/Components/Navbar';
 
 const AdminDashboard = () => {
@@ -53,11 +58,9 @@ const AdminDashboard = () => {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: <FiHome /> },
     { id: 'users', label: 'Users', icon: <FiUsers /> },
-    { id: 'analytics', label: 'Analytics', icon: <FiBarChart2 /> },
-    { id: 'departments', label: 'Departments', icon: <FiBriefcase /> },
-    { id: 'attendance', label: 'Attendance', icon: <FiCalendar /> },
     { id: 'payroll', label: 'Payroll', icon: <FiDollarSign /> },
     { id: 'reports', label: 'Reports', icon: <FiTrendingUp /> },
+    { id: 'messages', label: 'Messages', icon: <FiMessageSquare /> },
     { id: 'settings', label: 'Settings', icon: <FiSettings /> }
   ];
 
@@ -75,7 +78,17 @@ const AdminDashboard = () => {
   ];
 
   const handleLogout = () => {
-    // Handle logout logic
+    // Clear authentication data
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Clear any other session data
+    sessionStorage.clear();
+    
+    // Show logout confirmation
+    console.log('👋 User logged out successfully');
+    
+    // Navigate to login page
     navigate('/login');
   };
 
@@ -169,6 +182,28 @@ const AdminDashboard = () => {
 
       case 'users':
         return <UserManagement />;
+
+      case 'payroll':
+        return <Payroll />;
+
+      case 'reports':
+        return <Reports />;
+
+      case 'messages':
+        return <Messages />;
+
+      case 'settings':
+        return (
+          <div className="settings-with-logout">
+            <Settings />
+            <div className="settings-logout-section">
+              <button className="settings-logout-btn" onClick={handleLogout}>
+                <FiLogOut />
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        );
 
       default:
         return (

@@ -19,31 +19,46 @@ const Attendance = () => {
   const [animateIn, setAnimateIn] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString());
 
-  // Initialize component
+  // Load data from localStorage on component mount
   useEffect(() => {
     setTimeout(() => setAnimateIn(true), 100);
+    
+    const today = new Date().toLocaleDateString();
+    const storedData = localStorage.getItem('attendanceData');
+    
+    if (storedData) {
+      try {
+        const data = JSON.parse(storedData);
+        if (data.date === today) {
+          console.log('Loading data from localStorage:', data);
+          setEmployees(data.employees || []);
+          setStats(data.stats || stats);
+          setIsLockedForDay(data.isLocked || false);
+          setLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.error('Error loading from localStorage:', error);
+        localStorage.removeItem('attendanceData');
+      }
+    }
+    
     fetchEmployees();
   }, []);
 
-  // Calculate stats whenever employees change
+  // Update stats whenever employees change
   useEffect(() => {
-    console.log('🔄 useEffect triggered - employees changed');
-    console.log('🔄 useEffect triggered - employees length:', employees.length);
-    calculateStats();
+    updateStats();
   }, [employees]);
 
-  // Save to localStorage whenever important data changes
+  // Save data to localStorage whenever employees or stats change
   useEffect(() => {
-    if (employees.length > 0) {
-      saveToLocalStorage();
-    }
+    saveToLocalStorage();
   }, [employees, stats, isLockedForDay]);
 
   const fetchEmployees = async () => {
     try {
       setLoading(true);
-      setError(null);
-      
       const token = sessionStorage.getItem('token');
       if (!token) {
         setError('Please login to view attendance');
@@ -51,16 +66,12 @@ const Attendance = () => {
         return;
       }
       
-      console.log('Fetching employees...');
       const response = await fetch('http://localhost:5000/api/auth/employees', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
       if (response.ok) {
         const usersData = await response.json();
-        console.log('Employees fetched:', usersData);
-        
-        // Format employees data
         const formattedEmployees = usersData.map(user => ({
           id: user.id || user._id,
           name: user.name,
@@ -76,9 +87,7 @@ const Attendance = () => {
         
         setEmployees(formattedEmployees);
         setLoading(false);
-        console.log('Employees set successfully:', formattedEmployees);
       } else {
-        console.error('Failed to fetch employees');
         setError('Failed to load employees');
         setLoading(false);
       }
@@ -89,15 +98,7 @@ const Attendance = () => {
     }
   };
 
-  const calculateStats = () => {
-    console.log('🔢 calculateStats called with employees:', employees);
-    console.log('🔢 employees length:', employees.length);
-    
-    if (employees.length === 0) {
-      console.log('⚠️ No employees to calculate stats for');
-      return;
-    }
-    
+  const updateStats = () => {
     const presentCount = employees.filter(emp => emp.todayMarked && emp.status === 'Present').length;
     const lateCount = employees.filter(emp => emp.todayMarked && emp.status === 'Late').length;
     const absentCount = employees.filter(emp => emp.todayMarked && emp.status === 'Absent').length;
@@ -105,7 +106,7 @@ const Attendance = () => {
     const totalPoints = employees.reduce((sum, emp) => sum + emp.points, 0);
     
     const newStats = { presentCount, lateCount, absentCount, notMarkedCount, totalPoints };
-    console.log('📊 Stats calculated:', newStats);
+    console.log('Updated stats:', newStats);
     setStats(newStats);
   };
 
@@ -118,7 +119,7 @@ const Attendance = () => {
       isLocked: isLockedForDay
     };
     localStorage.setItem('attendanceData', JSON.stringify(data));
-    console.log('Data saved to localStorage:', data);
+    console.log('Saved to localStorage:', data);
   };
 
   const markAttendance = async (employeeId, status) => {
@@ -129,21 +130,12 @@ const Attendance = () => {
         return;
       }
 
-      // Find employee
       const employee = employees.find(emp => emp.id === employeeId);
-      if (!employee) {
-        toast.error('Employee not found');
-        return;
-      }
-
-      if (employee.todayMarked) {
+      if (employee?.todayMarked) {
         toast.error('Attendance for this employee has already been marked today.');
         return;
       }
 
-      console.log(`Marking ${employee.name} as ${status}`);
-      
-      // Call API
       const response = await fetch('http://localhost:5000/api/auth/attendance', {
         method: 'PUT',
         headers: {
@@ -155,11 +147,11 @@ const Attendance = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Attendance marked successfully:', data);
+        console.log('Attendance marked:', data);
         
-        // Update employee in state
-        setEmployees(prevEmployees => {
-          const updatedEmployees = prevEmployees.map(emp => 
+        // Update local state
+        setEmployees(prev => {
+          const updated = prev.map(emp => 
             emp.id === employeeId 
               ? { 
                   ...emp, 
@@ -171,22 +163,20 @@ const Attendance = () => {
                 } 
               : emp
           );
-          
-          console.log('Updated employees array:', updatedEmployees);
-          
-          // Check if all employees are now marked using the updated array
-          if (updatedEmployees.every(emp => emp.todayMarked)) {
-            setIsLockedForDay(true);
-            toast.success('🎉 All employees have been marked! Attendance is now locked for today.');
-          }
-          
-          return updatedEmployees;
+          return updated;
         });
+
+        // Check if all employees are marked
+        const allMarked = employees.filter(emp => emp.id !== employeeId).every(emp => emp.todayMarked);
+        if (allMarked) {
+          setIsLockedForDay(true);
+          toast.success('🎉 All employees have been marked! Attendance is now locked for today.');
+        }
 
         const pointsChange = data.employee.attendance.todayPoints;
         const pointsMessage = pointsChange > 0 ? `+${pointsChange} points added!` : `${pointsChange} points deducted.`;
         
-        toast.success(`✅ ${employee.name} marked as ${status}. ${pointsMessage}`);
+        toast.success(`✅ Attendance marked as ${status}. ${pointsMessage}`);
       } else {
         const errorData = await response.json();
         toast.error(errorData.message || 'Failed to update attendance');
