@@ -4,51 +4,7 @@ import { FiUsers, FiClock, FiShield, FiTrendingUp } from 'react-icons/fi';
 
 const About = () => {
   return (
-    <section className="about-section">
-      {/* Animated Background */}
-      <div className="animated-background">
-        {/* Primary Gradient Layer */}
-        <div className="gradient-layer gradient-1"></div>
-        <div className="gradient-layer gradient-2"></div>
-        
-        {/* Floating Geometric Shapes */}
-        <div className="geometric-shapes">
-          <div className="shape shape-circle-1"></div>
-          <div className="shape shape-circle-2"></div>
-          <div className="shape shape-triangle-1"></div>
-          <div className="shape shape-square-1"></div>
-          <div className="shape shape-hexagon-1"></div>
-          <div className="shape shape-circle-3"></div>
-          <div className="shape shape-triangle-2"></div>
-          <div className="shape shape-square-2"></div>
-        </div>
-        
-        {/* Light Particles */}
-        <div className="particles-container">
-          {[...Array(30)].map((_, i) => (
-            <div
-              key={i}
-              className="particle"
-              style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${8 + Math.random() * 4}s`
-              }}
-            ></div>
-          ))}
-        </div>
-        
-        {/* Abstract Wave Motions */}
-        <div className="wave-container">
-          <div className="wave wave-1"></div>
-          <div className="wave wave-2"></div>
-          <div className="wave wave-3"></div>
-        </div>
-        
-        {/* Subtle Grid Pattern */}
-        <div className="grid-pattern"></div>
-      </div>
-
+    <section className="about-section" style={{ backgroundColor: '#f7f7f7' }}>
       {/* Main Content */}
       <div className="about-container">
         <div className="about-header">

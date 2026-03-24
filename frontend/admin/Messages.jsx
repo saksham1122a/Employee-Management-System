@@ -4,12 +4,23 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Messages.css';
 
+// Move getDefaultMessages outside the component to fix ReferenceError
+const getDefaultMessages = () => {
+  return []; // Return empty array - we'll fetch real data from localStorage
+};
+
 const Messages = () => {
   const [messages, setMessages] = useState(() => {
+    // Load messages from localStorage (real-time data from Contact.jsx)
     const savedMessages = localStorage.getItem('adminMessages');
     if (savedMessages) {
       try {
-        return JSON.parse(savedMessages);
+        const parsedMessages = JSON.parse(savedMessages);
+        // Ensure unique keys by removing duplicates
+        const uniqueMessages = parsedMessages.filter((msg, index, self) =>
+          index === self.findIndex((m) => m.id === msg.id)
+        );
+        return uniqueMessages;
       } catch (error) {
         console.error('Error loading saved messages:', error);
       }
@@ -24,75 +35,55 @@ const Messages = () => {
   const [loading, setLoading] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
 
-  const getDefaultMessages = () => {
-    return [
-      {
-        id: 1,
-        sender: 'John Doe',
-        senderEmail: 'john.doe@company.com',
-        subject: 'Project Update Request',
-        content: 'Hi, I need to update the project timeline for Q2. Can we schedule a meeting to discuss changes?',
-        timestamp: '2024-03-21T10:30:00',
-        isRead: false,
-        isStarred: true,
-        category: 'work',
-        priority: 'high',
-        attachments: ['project_timeline.pdf', 'budget_analysis.xlsx']
-      },
-      {
-        id: 2,
-        sender: 'Sarah Wilson',
-        senderEmail: 'sarah.wilson@company.com',
-        subject: 'Team Meeting Tomorrow',
-        content: 'Reminder: We have a team meeting scheduled for tomorrow at 2 PM. Please prepare your status updates.',
-        timestamp: '2024-03-21T09:15:00',
-        isRead: true,
-        isStarred: false,
-        category: 'meeting',
-        priority: 'medium',
-        attachments: []
-      },
-      {
-        id: 3,
-        sender: 'Mike Johnson',
-        senderEmail: 'mike.johnson@company.com',
-        subject: 'Leave Application Approved',
-        content: 'Your leave application for March 25-28 has been approved. Please ensure all your tasks are delegated.',
-        timestamp: '2024-03-20T16:45:00',
-        isRead: true,
-        isStarred: true,
-        category: 'hr',
-        priority: 'low',
-        attachments: ['leave_approval.pdf']
-      },
-      {
-        id: 4,
-        sender: 'System Admin',
-        senderEmail: 'system@company.com',
-        subject: 'System Maintenance Notice',
-        content: 'The system will undergo maintenance on March 22 from 2 AM to 6 AM. Please save your work before this time.',
-        timestamp: '2024-03-20T14:20:00',
-        isRead: false,
-        isStarred: false,
-        category: 'system',
-        priority: 'high',
-        attachments: []
-      },
-      {
-        id: 5,
-        sender: 'Emma Davis',
-        senderEmail: 'emma.davis@company.com',
-        subject: 'Budget Review Comments',
-        content: 'I have reviewed the budget proposal and have some suggestions. Please find my comments in the attached document.',
-        timestamp: '2024-03-20T11:30:00',
-        isRead: true,
-        isStarred: false,
-        category: 'finance',
-        priority: 'medium',
-        attachments: ['budget_comments.docx']
+  // Real-time data fetching from localStorage
+  useEffect(() => {
+    const fetchRealTimeMessages = () => {
+      const savedMessages = localStorage.getItem('adminMessages');
+      if (savedMessages) {
+        try {
+          const parsedMessages = JSON.parse(savedMessages);
+          // Filter to show only user-sent messages (exclude default/mock messages)
+          const userMessages = parsedMessages.filter(msg => 
+            msg.sender !== 'John Doe' && 
+            msg.senderEmail !== 'john.doe@company.com' &&
+            msg.sender !== 'Sarah Wilson' &&
+            msg.senderEmail !== 'sarah.wilson@company.com' &&
+            msg.sender !== 'Mike Johnson' &&
+            msg.senderEmail !== 'mike.johnson@company.com' &&
+            msg.sender !== 'System Admin' &&
+            msg.senderEmail !== 'system@company.com' &&
+            msg.sender !== 'Emma Davis' &&
+            msg.senderEmail !== 'emma.davis@company.com'
+          );
+          
+          // Ensure unique keys
+          const uniqueMessages = userMessages.filter((msg, index, self) =>
+            index === self.findIndex((m) => m.id === msg.id)
+          );
+          
+          setMessages(uniqueMessages);
+        } catch (error) {
+          console.error('Error loading real-time messages:', error);
+        }
       }
-    ];
-  };
+    };
+
+    // Initial fetch
+    fetchRealTimeMessages();
+    
+    // Set up polling for real-time updates (every 5 seconds)
+    const interval = setInterval(fetchRealTimeMessages, 5000);
+    
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update localStorage whenever messages change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('adminMessages', JSON.stringify(messages));
+    }
+  }, [messages]);
 
   const getFilteredMessages = () => {
     let filtered = messages;
