@@ -201,21 +201,27 @@ const Leave = () => {
         return;
       }
       
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('type', formData.type);
+      formDataToSend.append('startDate', formData.startDate);
+      formDataToSend.append('endDate', formData.endDate);
+      formDataToSend.append('reason', formData.reason);
+      formDataToSend.append('emergencyContact', formData.emergencyContact);
+      formDataToSend.append('emergencyPhone', formData.emergencyPhone);
+      
+      // Add file if exists
+      if (formData.attachment) {
+        formDataToSend.append('attachment', formData.attachment);
+      }
+      
       const response = await fetch('http://localhost:5000/api/auth/leave/request', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
+          // Don't set Content-Type for FormData - browser sets it with boundary
         },
-        body: JSON.stringify({
-          type: formData.type,
-          startDate: formData.startDate,
-          endDate: formData.endDate,
-          reason: formData.reason,
-          emergencyContact: formData.emergencyContact,
-          emergencyPhone: formData.emergencyPhone,
-          attachment: formData.attachment?.name || null
-        })
+        body: formDataToSend
       });
       
       if (response.ok) {

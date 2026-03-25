@@ -263,19 +263,13 @@ const deleteUser = async (req, res) => {
 
 const createLeaveRequest = async (req, res) => {
   try {
-    const { type, startDate, endDate, reason, emergencyContact, emergencyPhone, attachment } = req.body;
+    const { type, startDate, endDate, reason, emergencyContact, emergencyPhone } = req.body;
+    
+    // Handle file upload from multer
+    const attachment = req.file ? req.file.filename : null;
     
     if (!type || !startDate || !endDate || !reason) {
       return res.status(400).json({ message: "All required fields must be provided" });
-    }
-    
-    // Calculate days
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-    
-    if (days <= 0) {
-      return res.status(400).json({ message: "End date must be after start date" });
     }
     
     // Get user info from token
@@ -294,28 +288,31 @@ const createLeaveRequest = async (req, res) => {
       type,
       startDate,
       endDate,
-      days,
-      status: 'pending',
       reason,
-      appliedOn: new Date().toISOString().split('T')[0],
-      approvedBy: '--',
-      approvedOn: '--',
       employeeId: decoded.id,
-      employeeName: decoded.name,
+      employeeName: decoded.name || decoded.email || 'Unknown Employee',
       employeeEmail: decoded.email,
+      status: 'pending',
+      appliedOn: new Date().toISOString().split('T')[0],
       emergencyContact: emergencyContact || '',
       emergencyPhone: emergencyPhone || '',
-      attachment: attachment || null
+      attachment: attachment // Store the filename from multer
     };
     
     data.leaveRequests.push(newLeaveRequest);
     saveData(data);
     
+    console.log('📎 Leave request created with attachment:', attachment);
+    
     res.status(201).json({
       message: "Leave request submitted successfully",
-      leaveRequest: newLeaveRequest
+      leaveRequest: {
+        ...newLeaveRequest,
+        attachmentUrl: attachment ? `http://localhost:5000/uploads/${attachment}` : null
+      }
     });
   } catch (error) {
+    console.error('❌ Error creating leave request:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -328,7 +325,7 @@ const getLeaveRequests = async (req, res) => {
     
     const data = loadData();
     
-    // Get leave requests for the current user
+    // Get leave requests for current user
     const userLeaveRequests = data.leaveRequests ? 
       data.leaveRequests.filter(leave => leave.employeeId === decoded.id) : [];
     

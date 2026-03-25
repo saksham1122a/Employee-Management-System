@@ -36,8 +36,8 @@
       "createdAt": "2026-02-22T14:03:36.483Z",
       "updatedAt": "2026-02-22T14:03:36.483Z",
       "attendance": {
-        "points": 42,
-        "lastUpdated": "2026-03-24",
+        "points": 40,
+        "lastUpdated": "2026-03-25",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -98,9 +98,14 @@
             "status": "Late",
             "points": 3,
             "timestamp": "2026-03-24T15:43:38.469Z"
+          },
+          "2026-03-25": {
+            "status": "Absent",
+            "points": -2,
+            "timestamp": "2026-03-25T11:56:15.088Z"
           }
         },
-        "percentage": 83
+        "percentage": 77
       }
     },
     {
@@ -112,8 +117,8 @@
       "createdAt": "2026-02-22T14:12:32.879Z",
       "updatedAt": "2026-02-22T14:12:32.879Z",
       "attendance": {
-        "points": 51,
-        "lastUpdated": "2026-03-24",
+        "points": 49,
+        "lastUpdated": "2026-03-25",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -174,9 +179,14 @@
             "status": "Present",
             "points": 5,
             "timestamp": "2026-03-24T15:45:40.577Z"
+          },
+          "2026-03-25": {
+            "status": "Absent",
+            "points": -2,
+            "timestamp": "2026-03-25T11:56:20.197Z"
           }
         },
-        "percentage": 92
+        "percentage": 85
       }
     },
     {

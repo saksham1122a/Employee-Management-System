@@ -251,6 +251,18 @@ const Attendance = () => {
     toast.success('Stale data cleared! Synced with server.');
   };
 
+  const markPresent = async (employeeId) => {
+    await markAttendance(employeeId, 'Present');
+  };
+
+  const markAbsent = async (employeeId) => {
+    await markAttendance(employeeId, 'Absent');
+  };
+
+  const markLate = async (employeeId) => {
+    await markAttendance(employeeId, 'Late');
+  };
+
   const markAttendance = async (employeeId, status) => {
     try {
       const token = sessionStorage.getItem('token');
@@ -302,9 +314,28 @@ const Attendance = () => {
         
         toast.success(`✅ ${employee.name} marked as ${status}. ${pointsMessage}`);
         
-        // Immediately refresh data from backend to get updated state
-        console.log('🔄 Refreshing data after marking attendance...');
-        await fetchEmployeesWithAttendance();
+        // Update employee state directly from successful response instead of calling failing GET endpoint
+        console.log('🔄 Updating employee state from successful response...');
+        setEmployees(prevEmployees => {
+          const updatedEmployees = prevEmployees.map(emp => 
+            emp.id === employeeId 
+              ? { 
+                  ...emp, 
+                  todayMarked: true,
+                  status: status,
+                  points: data.employee.attendance.points || emp.points,
+                  attendance: data.employee.attendance.percentage || emp.attendance,
+                  lastUpdated: data.employee.attendance.lastUpdated || new Date().toISOString()
+                } 
+              : emp
+          );
+          
+          console.log('📊 Updated employee from successful response:', updatedEmployees);
+          return updatedEmployees;
+        });
+        
+        setLoading(false);
+        return;
         
       } else {
         // Get detailed error information
@@ -668,27 +699,27 @@ const Attendance = () => {
                 <div className="card-actions">
                   <button 
                     className={`action-btn present-btn ${employee.todayMarked ? 'disabled' : ''}`}
-                    onClick={() => markAttendance(employee.id, 'Present')}
+                    onClick={() => markPresent(employee.id)}
                     disabled={employee.todayMarked}
                   >
                     <FiCheck />
-                    <span>Present (+5)</span>
+                    Present
                   </button>
                   <button 
                     className={`action-btn late-btn ${employee.todayMarked ? 'disabled' : ''}`}
-                    onClick={() => markAttendance(employee.id, 'Late')}
+                    onClick={() => markLate(employee.id)}
                     disabled={employee.todayMarked}
                   >
                     <FiClock />
-                    <span>Late (+3)</span>
+                    Late
                   </button>
                   <button 
                     className={`action-btn absent-btn ${employee.todayMarked ? 'disabled' : ''}`}
-                    onClick={() => markAttendance(employee.id, 'Absent')}
+                    onClick={() => markAbsent(employee.id)}
                     disabled={employee.todayMarked}
                   >
                     <FiX />
-                    <span>Absent (-2)</span>
+                    Absent
                   </button>
                 </div>
 
