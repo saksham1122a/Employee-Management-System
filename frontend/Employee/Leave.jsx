@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   FiCalendar, FiClock, FiCheckCircle, FiXCircle, FiAlertCircle,
-  FiPlus, FiEdit, FiTrash2, FiDownload, FiFilter, FiSearch,
-  FiSend, FiFileText, FiUser, FiMail, FiPhone, FiCheck, FiX
+  FiPlus, FiEdit, FiTrash2, FiDownload, FiFilter, FiSearch, FiSend, FiFileText, FiUser, FiMail, FiPhone, FiCheck, FiX
 } from 'react-icons/fi';
 import './Leave.css';
 
@@ -151,7 +150,16 @@ const Leave = () => {
 
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [showLeavePolicy, setShowLeavePolicy] = useState(false);
+  const [showQuickForm, setShowQuickForm] = useState(false);
+  const [quickFormData, setQuickFormData] = useState({
+    type: 'annual',
+    startDate: '',
+    endDate: '',
+    reason: '',
+    emergencyContact: '',
+    emergencyPhone: '',
+    attachment: null
+  });
 
   const leaveTypes = [
     { value: 'annual', label: 'Annual Leave', icon: '🏖️', maxDays: 12 },
@@ -160,6 +168,79 @@ const Leave = () => {
     { value: 'maternity', label: 'Maternity Leave', icon: '🤱', maxDays: 90 },
     { value: 'paternity', label: 'Paternity Leave', icon: '👨‍👧‍👦', maxDays: 14 }
   ];
+
+  const handleQuickSubmit = async (e) => {
+    e.preventDefault();
+    
+    const days = calculateDays(quickFormData.startDate, quickFormData.endDate);
+    
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        showNotification('Please login to submit leave request', 'error');
+        return;
+      }
+      
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('type', quickFormData.type);
+      formDataToSend.append('startDate', quickFormData.startDate);
+      formDataToSend.append('endDate', quickFormData.endDate);
+      formDataToSend.append('reason', quickFormData.reason);
+      formDataToSend.append('emergencyContact', quickFormData.emergencyContact);
+      formDataToSend.append('emergencyPhone', quickFormData.emergencyPhone);
+      
+      // Add file if exists
+      if (quickFormData.attachment) {
+        formDataToSend.append('attachment', quickFormData.attachment);
+      }
+      
+      const response = await fetch('http://localhost:5000/api/auth/leave/request', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+          // Don't set Content-Type for FormData - browser sets it with boundary
+        },
+        body: formDataToSend
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Update leave balance
+        const currentBalance = leaveBalance[quickFormData.type] || 0;
+        setLeaveBalance(prev => ({
+          ...prev,
+          [quickFormData.type]: currentBalance - days,
+        }));
+        
+        // Clear form and close
+        setQuickFormData({
+          type: 'annual',
+          startDate: '',
+          endDate: '',
+          reason: '',
+          emergencyContact: '',
+          emergencyPhone: '',
+          attachment: null,
+          referenceId: ''
+        });
+        setShowQuickForm(false);
+        
+        // Refresh leave history
+        await fetchLeaveHistory();
+        
+        // Show success message
+        showNotification(`Leave request submitted successfully! ${days} days requested.`, 'success');
+      } else {
+        const errorData = await response.json();
+        showNotification(errorData.message || 'Failed to submit leave request', 'error');
+      }
+    } catch (error) {
+      console.error('Error submitting leave request:', error);
+      showNotification('Network error. Please try again.', 'error');
+    }
+  };
 
   const calculateDays = (startDate, endDate) => {
     if (!startDate || !endDate) return 0;
@@ -349,20 +430,110 @@ const Leave = () => {
     }}>
       <NotificationComponent />
       <div className="leave-header">
-        <h1>Leave Management</h1>
-        <p>Request leave and track your leave history</p>
+        <div className="header-content">
+          <div className="header-text">
+            <h1>Leave Management</h1>
+            <p>Request leave and track your leave history</p>
+          </div>
+          <button 
+            className="btn-apply-leave"
+            onClick={() => setShowQuickForm(!showQuickForm)}
+            title="Quick Leave Request Form"
+          >
+            <FiSend /> Apply for Leave
+          </button>
+        </div>
+        
+        {/* Quick Leave Request Form */}
+        {showQuickForm && (
+          <div className="quick-form-overlay">
+            <div className="quick-form-modal">
+              <div className="quick-form-header">
+                <h3>Quick Leave Request</h3>
+                <button 
+                  className="modal-close"
+                  onClick={() => setShowQuickForm(false)}
+                >
+                  <FiX />
+                </button>
+              </div>
+              
+              <form onSubmit={handleQuickSubmit} className="quick-leave-form">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="quick-type">Leave Type</label>
+                    <select
+                      id="quick-type"
+                      value={quickFormData.type}
+                      onChange={(e) => setQuickFormData(prev => ({ ...prev, type: e.target.value }))}
+                      required
+                    >
+                      {leaveTypes.map(type => (
+                        <option key={type.value} value={type.value}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="quick-startDate">Start Date</label>
+                    <input
+                      type="date"
+                      id="quick-startDate"
+                      value={quickFormData.startDate}
+                      onChange={(e) => setQuickFormData(prev => ({ ...prev, startDate: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="quick-endDate">End Date</label>
+                    <input
+                      type="date"
+                      id="quick-endDate"
+                      value={quickFormData.endDate}
+                      onChange={(e) => setQuickFormData(prev => ({ ...prev, endDate: e.target.value }))}
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="quick-reason">Reason</label>
+                  <textarea
+                    id="quick-reason"
+                    value={quickFormData.reason}
+                    onChange={(e) => setQuickFormData(prev => ({ ...prev, reason: e.target.value }))}
+                    placeholder="Enter reason for leave request"
+                    rows={3}
+                    required
+                  />
+                </div>
+                
+                <div className="form-actions">
+                  <button 
+                    type="button"
+                    className="btn-cancel"
+                    onClick={() => setShowQuickForm(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit"
+                    className="btn-submit"
+                  >
+                    <FiSend /> Submit Request
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Leave Balance Cards */}
       <div className="balance-section">
         <div className="section-header">
           <h2>Leave Balance</h2>
-          <button 
-            className="btn-policy"
-            onClick={() => setShowLeavePolicy(!showLeavePolicy)}
-          >
-            <FiFileText /> Leave Policy
-          </button>
         </div>
         
         <div className="balance-grid">
@@ -398,35 +569,6 @@ const Leave = () => {
           </div>
         </div>
       </div>
-
-      {/* Leave Policy Section */}
-      {showLeavePolicy && (
-        <div className="policy-section">
-          <h3>Leave Policy</h3>
-          <div className="policy-content">
-            <div className="policy-item">
-              <h4>Annual Leave</h4>
-              <p>12 days per year, accumulates up to 24 days. Requires 2 weeks notice.</p>
-            </div>
-            <div className="policy-item">
-              <h4>Sick Leave</h4>
-              <p>8 days per year. Medical certificate required for more than 2 consecutive days.</p>
-            </div>
-            <div className="policy-item">
-              <h4>Personal Leave</h4>
-              <p>4 days per year for personal emergencies. Requires immediate notification.</p>
-            </div>
-            <div className="policy-item">
-              <h4>Maternity Leave</h4>
-              <p>90 days paid leave. Requires medical certification and 1 month notice.</p>
-            </div>
-            <div className="policy-item">
-              <h4>Paternity Leave</h4>
-              <p>14 days paid leave. Requires birth certificate and 2 weeks notice.</p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Leave History */}
       <div className="history-section">

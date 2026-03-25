@@ -203,37 +203,16 @@
     {
       "id": "1",
       "type": "personal",
-      "startDate": "2026-02-22",
-      "endDate": "2026-02-22",
-      "days": 1,
-      "status": "approved",
-      "reason": "Day out with family. Catch you tomorrow!",
-      "appliedOn": "2026-02-22",
-      "approvedBy": "Manager User",
-      "approvedOn": "2026-02-23",
+      "startDate": "2026-03-26",
+      "endDate": "2026-03-26",
+      "reason": "Greetings,\r\nSir, I'll be having a get together with my friends. They met after so long and I want to spend some time with them today.\r\nThanks",
       "employeeId": "7",
-      "employeeName": "Saksham Nanda",
-      "employeeEmail": "saksham@example.com",
-      "emergencyContact": "Saksham ",
-      "emergencyPhone": "6006915762",
-      "attachment": "Har Har Mahadev.html",
-      "rejectionReason": null
-    },
-    {
-      "id": "2",
-      "type": "sick",
-      "startDate": "2026-03-18",
-      "endDate": "2026-03-18",
-      "days": 1,
+      "employeeName": "Unknown Employee",
       "status": "pending",
-      "reason": "Feeling heavy fever today!",
-      "appliedOn": "2026-03-18",
-      "approvedBy": "--",
-      "approvedOn": "--",
-      "employeeId": "7",
-      "emergencyContact": "Saksham ",
-      "emergencyPhone": "6006915762",
-      "attachment": "Gemini_Generated_Image_m74rflm74rflm74r.png"
+      "appliedOn": "2026-03-25",
+      "emergencyContact": "",
+      "emergencyPhone": "",
+      "attachment": null
     }
   ]
 }

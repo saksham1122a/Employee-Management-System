@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiCalendar, FiUser, FiCheckCircle, FiX, FiRefreshCw, FiPaperclip, FiDownload, FiEye } from 'react-icons/fi';
+import { FiCalendar, FiUser, FiCheckCircle, FiX, FiRefreshCw, FiPaperclip, FiDownload, FiEye, FiTrash2 } from 'react-icons/fi';
 import './LeaveRequest.css';
 
 const LeaveRequest = () => {
@@ -166,6 +166,68 @@ const LeaveRequest = () => {
     }
   };
 
+  const handleDeleteRequest = async (requestId) => {
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        alert('Please login to perform this action');
+        return;
+      }
+
+      // Confirm deletion with better UI
+      const confirmed = window.confirm(
+        'Are you sure you want to delete this leave request?\n\n' +
+        'This action cannot be undone and will permanently remove the request from the system.'
+      );
+      
+      if (!confirmed) {
+        return;
+      }
+
+      console.log('Attempting to delete request:', requestId);
+      console.log('Using token:', token ? 'Token exists' : 'No token found');
+
+      const response = await fetch(`http://localhost:5000/api/auth/leave/requests/${requestId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('Delete response status:', response.status);
+      console.log('Delete response ok:', response.ok);
+
+      if (response.ok) {
+        // Remove from local state immediately
+        setLeaveRequests(prev => prev.filter(req => req.id !== requestId));
+        
+        // Show success message
+        alert('✅ Leave request deleted successfully!');
+      } else {
+        // Try to get error details
+        let errorMessage = 'Failed to delete leave request';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+          console.error('Backend error:', errorData);
+        } catch (e) {
+          console.error('Could not parse error response:', e);
+          errorMessage += ' (Server error)';
+        }
+        
+        alert('❌ ' + errorMessage);
+      }
+    } catch (error) {
+      console.error('Error deleting leave request:', error);
+      alert('❌ Network error. Please check your connection and try again.');
+    }
+  };
+
+  useEffect(() => {
+    fetchLeaveRequests();
+  }, []);
+
   const pendingRequests = leaveRequests.filter(req => req.status === 'pending');
   const approvedRequests = leaveRequests.filter(req => req.status === 'approved');
   const rejectedRequests = leaveRequests.filter(req => req.status === 'rejected');
@@ -228,20 +290,14 @@ const LeaveRequest = () => {
               </button>
             </div>
           ) : leaveRequests.length === 0 ? (
-            <div className="empty-state">
-              <FiUser className="empty-icon" />
-              <h3>No Leave Requests Found</h3>
-              <p>No employees have submitted leave requests yet.</p>
+            <div className="no-requests-state">
+              <p>No leave requests found.</p>
             </div>
           ) : (
             leaveRequests.map(request => (
-              <div key={request.id} className="leave-card">
-                <div className="leave-info">
-                  <div className="user-avatar" style={{ 
-                    background: request.employeeImage 
-                      ? `url(${request.employeeImage}) center/cover no-repeat` 
-                      : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-                    color: 'white',
+              <div key={request.id} className="leave-request">
+                <div className="leave-request-header">
+                  <div className="employee-image" style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -306,6 +362,14 @@ const LeaveRequest = () => {
                               <FiDownload />
                               Download
                             </button>
+                            <button
+                              className="btn-delete-attachment"
+                              onClick={() => handleDeleteRequest(request.id)}
+                              title="Delete request"
+                            >
+                              <FiTrash2 />
+                              Delete
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -329,22 +393,32 @@ const LeaveRequest = () => {
                   <span className={`status-badge ${request.status}`}>
                     {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                   </span>
-                  {request.status === 'pending' && (
-                    <div className="leave-actions">
+                  <div className="leave-actions">
+                    {request.status === 'pending' && (
                       <button 
                         className="btn-small btn-success" 
                         onClick={() => handleLeaveAction(request.id, 'approved')}
                       >
                         Approve
                       </button>
+                    )}
+                    {request.status === 'pending' && (
                       <button 
                         className="btn-small btn-danger" 
                         onClick={() => handleLeaveAction(request.id, 'rejected')}
                       >
                         Reject
                       </button>
-                    </div>
-                  )}
+                    )}
+                    <button 
+                      className="btn-small btn-delete"
+                      onClick={() => handleDeleteRequest(request.id)}
+                      title="Delete request"
+                    >
+                      <FiTrash2 />
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
