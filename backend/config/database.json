@@ -36,8 +36,8 @@
       "createdAt": "2026-02-22T14:03:36.483Z",
       "updatedAt": "2026-02-22T14:03:36.483Z",
       "attendance": {
-        "points": 40,
-        "lastUpdated": "2026-03-25",
+        "points": 43,
+        "lastUpdated": "2026-03-27",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -103,9 +103,19 @@
             "status": "Absent",
             "points": -2,
             "timestamp": "2026-03-25T11:56:15.088Z"
+          },
+          "2026-03-26": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-03-26T11:37:12.124Z"
+          },
+          "2026-03-27": {
+            "status": "Absent",
+            "points": -2,
+            "timestamp": "2026-03-27T12:53:10.256Z"
           }
         },
-        "percentage": 77
+        "percentage": 73
       }
     },
     {
@@ -117,8 +127,8 @@
       "createdAt": "2026-02-22T14:12:32.879Z",
       "updatedAt": "2026-02-22T14:12:32.879Z",
       "attendance": {
-        "points": 49,
-        "lastUpdated": "2026-03-25",
+        "points": 59,
+        "lastUpdated": "2026-03-27",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -184,9 +194,19 @@
             "status": "Absent",
             "points": -2,
             "timestamp": "2026-03-25T11:56:20.197Z"
+          },
+          "2026-03-26": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-03-26T11:37:15.977Z"
+          },
+          "2026-03-27": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-03-27T12:53:13.675Z"
           }
         },
-        "percentage": 85
+        "percentage": 87
       }
     },
     {
@@ -208,11 +228,14 @@
       "reason": "Greetings,\r\nSir, I'll be having a get together with my friends. They met after so long and I want to spend some time with them today.\r\nThanks",
       "employeeId": "7",
       "employeeName": "Unknown Employee",
-      "status": "pending",
+      "status": "approved",
       "appliedOn": "2026-03-25",
       "emergencyContact": "",
       "emergencyPhone": "",
-      "attachment": null
+      "attachment": null,
+      "approvedBy": "Manager User",
+      "approvedOn": "2026-03-26",
+      "rejectionReason": null
     }
   ]
 }
