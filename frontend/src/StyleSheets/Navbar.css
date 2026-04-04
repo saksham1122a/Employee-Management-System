@@ -17,8 +17,10 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 :root {
-  --dark-gray: #343440;
+  --primary-color: #4361ee;
+  --secondary-color: #3a0ca3;
   --muted-blue: #6883A6;
+  --dark-gray: #343440;
   --light-orange: #F2B56B;
   --light-beige: #D9B2B2;
   --white: #ffffff;
@@ -46,11 +48,11 @@
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 2rem;
-  display: grid;
-  grid-template-columns: auto 1fr auto; 
+  padding: 0 1rem;
+  display: flex;
   align-items: center;
-  gap: 2rem;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .nav-brand {
@@ -66,7 +68,6 @@
   color: var(--white);
   text-decoration: none;
   white-space: nowrap;
-  padding-right: 2rem; 
   position: relative;
   transition: all 0.3s ease;
   font-family: 'General Sans', sans-serif;
@@ -91,26 +92,28 @@
 .navbar * {
   font-family: 'General Sans', sans-serif !important;
 }
-.nav-logo:hover {
-  transform: scale(1.05);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
 
 .nav-links {
   display: flex;
   align-items: center;
   justify-content: center; 
   gap: 3rem;
-  margin: 0 auto;
-  width: 100%;
-  padding: 0 10% 0 15%; 
+  margin: 0;
+  flex: 1;
+  padding: 0 9rem;
   box-sizing: border-box;
+}
+
+/* Profile dropdown positioned at right */
+.profile-dropdown {
+  position: relative;
+  margin-left: auto;
 }
 
 .nav-link {
   color: var(--white);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 700;
   font-size: 1.25rem; 
   padding: 0.75rem 1rem;
   position: relative;
@@ -168,7 +171,7 @@
 
 .nav-link.active {
   color: var(--muted-blue);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1.25rem; 
 }
 
@@ -177,16 +180,33 @@
   background-color: var(--muted-blue);
 }
 
-.profile-dropdown {
-  position: relative;
+.dropdown-profile-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 18px;
+  flex-shrink: 0;
+  overflow: hidden;
 }
- 
+
+.dropdown-profile-avatar .profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
 
 .profile-icon {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -196,6 +216,14 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  overflow: hidden;
+}
+
+.profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .profile-icon:hover {
@@ -230,7 +258,7 @@
 
  .dropdown-header {
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -254,12 +282,19 @@
 }
 
 .user-name {
-  color: white;
+  font-size: 0.875rem;
   font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 4px;
+  color: #2d3748;
+  margin-bottom: 0.125rem;
 }
- 
+
+.user-role {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
 .user-email {
   color: rgba(255, 255, 255, 0.8);
   font-size: 14px;
@@ -355,7 +390,7 @@
  
 .name-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-color);
 }
  
 .modal-buttons {
@@ -384,7 +419,7 @@
 }
  
 .save-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   color: white;
 }
  

@@ -10,6 +10,7 @@ import Signup from './Components/Signup';
 import Footer from './Components/Footer';
 import ForgetPassword from './Components/ForgetPassword';
 import LearnMore from './Components/LearnMore';
+import Profile from './Components/Profile';
 import AdminDashboard from '../admin/AdminDashboard';
 import UserManagement from '../admin/User';
 import ManagerDashboard from '../Manager/ManagerDashboard';
@@ -56,6 +57,7 @@ function App() {
   <Route path="/employee" element={<EmployeeDashboard />} />
   <Route path="/employee/attendance" element={<Attendance />} />
   <Route path="/employee/leave" element={<Leave />} />
+  <Route path="/profile" element={<Profile />} />
   
   <Route path="*" element={<Navigate to="/" />} />
 

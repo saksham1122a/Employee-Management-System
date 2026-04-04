@@ -17,7 +17,16 @@ const Navbar = () => {
       try {
         const token = sessionStorage.getItem('token');
         if (token) {
-          const userData = JSON.parse(sessionStorage.getItem('user'));
+          const storedUser = JSON.parse(sessionStorage.getItem('user'));
+          
+          // Try to get permanent data from localStorage
+          const userId = storedUser?.id || storedUser?._id || 'default';
+          const permanentUserData = localStorage.getItem(`profile_${userId}`);
+          
+          // Use permanent data if available, otherwise use session data
+          const userData = permanentUserData ? JSON.parse(permanentUserData) : storedUser;
+          
+          console.log('Navbar loading user data:', userData); // Debug log
           setUser(userData);
         } else {
           setUser(null);
@@ -62,6 +71,14 @@ const Navbar = () => {
   }, []);
 
   const getProfileLetter = () => {
+    // Check if user has an avatar image
+    if (user?.avatar) {
+      return <img src={user.avatar} alt="Profile" className="profile-avatar-img" />;
+    }
+    // Show initials if no avatar
+    if (user?.firstName) {
+      return user.firstName.charAt(0).toUpperCase();
+    }
     if (user?.name) {
       return user.name.charAt(0).toUpperCase();
     }
@@ -72,11 +89,17 @@ const Navbar = () => {
   };
 
   const getDisplayName = () => {
+    // Try to get full name from firstName + lastName
+    if (user?.firstName && user?.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    // Fallback to name field
     if (user?.name) {
       return user.name;
     }
+    // Fallback to email username
     if (user?.email) {
-      return user.email.split('@')[0]; // Show part before @ as display name
+      return user.email.split('@')[0];
     }
     return 'User';
   };
@@ -150,31 +173,43 @@ const Navbar = () => {
                 {dropdownOpen && (
                   <div className="dropdown-menu">
                     <div className="dropdown-header">
-                      <div className="profile-avatar">
+                      <div className="dropdown-profile-avatar">
                         {getProfileLetter()}
                       </div>
                       <div className="user-info">
                         <div className="user-name">{getDisplayName()}</div>
-                        <div className="user-email">{user.email}</div>
+                        <div className="user-role">{user?.role || 'User'}</div>
                       </div>
                     </div>
                     
                     <div className="dropdown-divider"></div>
                     
-                    <div className="dropdown-item">
-                      <FiMail className="item-icon" />
-                      <span>{user.email}</span>
-                    </div>
+                    <Link to="/profile" className="dropdown-item">
+                      <FiUser className="item-icon" />
+                      <span>My Profile</span>
+                    </Link>
                     
-                    <div className="dropdown-item" onClick={handleNameEdit}>
-                      <FiEdit2 className="item-icon" />
-                      <span>Edit Name</span>
-                    </div>
+                    {/* Dashboard Navigation */}
+                    {user?.role === 'employee' && (
+                      <Link to="/employee" className="dropdown-item">
+                        <FiUser className="item-icon" />
+                        <span>Employee Dashboard</span>
+                      </Link>
+                    )}
                     
-                    <div className="dropdown-item">
-                      <FiSettings className="item-icon" />
-                      <span>Settings</span>
-                    </div>
+                    {user?.role === 'manager' && (
+                      <Link to="/manager" className="dropdown-item">
+                        <FiUser className="item-icon" />
+                        <span>Manager Dashboard</span>
+                      </Link>
+                    )}
+                    
+                    {user?.role === 'admin' && (
+                      <Link to="/admin" className="dropdown-item">
+                        <FiUser className="item-icon" />
+                        <span>Admin Dashboard</span>
+                      </Link>
+                    )}
                     
                     <div className="dropdown-divider"></div>
                     
