@@ -36,8 +36,8 @@
       "createdAt": "2026-02-22T14:03:36.483Z",
       "updatedAt": "2026-02-22T14:03:36.483Z",
       "attendance": {
-        "points": 53,
-        "lastUpdated": "2026-04-04",
+        "points": 66,
+        "lastUpdated": "2026-05-24",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -123,9 +123,24 @@
             "status": "Present",
             "points": 5,
             "timestamp": "2026-04-04T07:43:50.357Z"
+          },
+          "2026-04-14": {
+            "status": "Late",
+            "points": 3,
+            "timestamp": "2026-04-14T04:57:28.975Z"
+          },
+          "2026-04-15": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-04-15T10:17:46.189Z"
+          },
+          "2026-05-24": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-05-24T07:38:27.229Z"
           }
         },
-        "percentage": 76
+        "percentage": 80
       }
     },
     {
@@ -137,8 +152,8 @@
       "createdAt": "2026-02-22T14:12:32.879Z",
       "updatedAt": "2026-02-22T14:12:32.879Z",
       "attendance": {
-        "points": 69,
-        "lastUpdated": "2026-04-04",
+        "points": 84,
+        "lastUpdated": "2026-05-24",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -224,9 +239,24 @@
             "status": "Present",
             "points": 5,
             "timestamp": "2026-04-04T07:43:50.365Z"
+          },
+          "2026-04-14": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-04-14T04:57:25.950Z"
+          },
+          "2026-04-15": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-04-15T10:17:48.437Z"
+          },
+          "2026-05-24": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-05-24T07:38:30.692Z"
           }
         },
-        "percentage": 88
+        "percentage": 90
       }
     },
     {
@@ -265,11 +295,14 @@
       "reason": "Having a doctor check-up tomorrow!",
       "employeeId": "7",
       "employeeName": "Unknown Employee",
-      "status": "pending",
+      "status": "approved",
       "appliedOn": "2026-04-04",
       "emergencyContact": "",
       "emergencyPhone": "",
-      "attachment": null
+      "attachment": null,
+      "approvedBy": "Manager User",
+      "approvedOn": "2026-04-14",
+      "rejectionReason": null
     }
   ]
 }
