@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiArrowRight } from 'react-icons/fi';
+import { FiArrowRight, FiUsers } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import videoSource from '../images/From KlickPin CF vector animation video nel 2025 _ Video.mp4';
 import '../StyleSheets/HeroSection.css';
@@ -15,16 +15,26 @@ const HeroSection = () => {
         <div className="video-overlay">
           <div className="hero-content">
             <div className="hero-text">
-              <h1>Empower Your Workforce, Elevate Your Business</h1>
+
+              <div className="hero-badge">
+                <FiUsers className="badge-icon" />
+                <span>Modern Employee Management</span>
+              </div>
+
+              <h1>
+                Empower Your Team, <span className="hero-highlight">Elevate</span> Your Business.
+              </h1>
+
               <div className="cta-container">
                 <Link to="/signup" className="cta-button">
-                  Get Started
+                  Get Started Free
                   <FiArrowRight className="cta-icon" />
                 </Link>
                 <Link to="/learn-more" className="learn-more">
-                  Learn more about us <span>→</span>
+                  See how it works <span className="learn-arrow">→</span>
                 </Link>
               </div>
+
             </div>
           </div>
         </div>

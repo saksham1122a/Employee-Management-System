@@ -160,98 +160,99 @@ const Navbar = () => {
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/about" className="nav-link">About</Link>
             <Link to="/contact" className="nav-link">Contact</Link>
-            
-            {user ? (
-              <div className="profile-dropdown" ref={dropdownRef}>
-                <div 
-                  className="profile-icon"
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                >
-                  {getProfileLetter()}
-                </div>
-                
-                {dropdownOpen && (
-                  <div className="dropdown-menu">
-                    <div className="dropdown-header">
-                      <div className="dropdown-profile-avatar">
-                        {getProfileLetter()}
-                      </div>
-                      <div className="user-info">
-                        <div className="user-name">{getDisplayName()}</div>
-                        <div className="user-role">{user?.role || 'User'}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="dropdown-divider"></div>
-                    
-                    <Link to="/profile" className="dropdown-item">
-                      <FiUser className="item-icon" />
-                      <span>My Profile</span>
-                    </Link>
-                    
-                    {/* Dashboard Navigation */}
-                    {user?.role === 'employee' && (
-                      <Link to="/employee" className="dropdown-item">
-                        <FiUser className="item-icon" />
-                        <span>Employee Dashboard</span>
-                      </Link>
-                    )}
-                    
-                    {user?.role === 'manager' && (
-                      <Link to="/manager" className="dropdown-item">
-                        <FiUser className="item-icon" />
-                        <span>Manager Dashboard</span>
-                      </Link>
-                    )}
-                    
-                    {user?.role === 'admin' && (
-                      <Link to="/admin" className="dropdown-item">
-                        <FiUser className="item-icon" />
-                        <span>Admin Dashboard</span>
-                      </Link>
-                    )}
-                    
-                    <div className="dropdown-divider"></div>
-                    
-                    <div className="dropdown-item logout-item" onClick={handleLogout}>
-                      <FiLogOut className="item-icon" />
-                      <span>Logout</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Name Edit Modal */}
-                {showNameEdit && (
-                  <div className="edit-name-modal">
-                    <div className="modal-content">
-                      <h3>Edit Name</h3>
-                      <input
-                        type="text"
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                        placeholder="Enter your name"
-                        className="name-input"
-                        autoFocus
-                      />
-                      <div className="modal-buttons">
-                        <button onClick={handleNameCancel} className="cancel-btn">
-                          Cancel
-                        </button>
-                        <button onClick={handleNameSave} className="save-btn">
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="auth-buttons">
-                <Link to="/login" className="btn login-btn">Login</Link>
-                <Link to="/signup" className="btn signup-btn">Sign Up</Link>
-              </div>
-            )}
           </div>
+
+          {/* Auth / Profile — always at sharp right */}
+          {user ? (
+            <div className="profile-dropdown" ref={dropdownRef}>
+              <div 
+                className="profile-icon"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+              >
+                {getProfileLetter()}
+              </div>
+              
+              {dropdownOpen && (
+                <div className="dropdown-menu">
+                  <div className="dropdown-header">
+                    <div className="dropdown-profile-avatar">
+                      {getProfileLetter()}
+                    </div>
+                    <div className="user-info">
+                      <div className="user-name">{getDisplayName()}</div>
+                      <div className="user-role">{user?.role || 'User'}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="dropdown-divider"></div>
+                  
+                  <Link to="/profile" className="dropdown-item">
+                    <FiUser className="item-icon" />
+                    <span>My Profile</span>
+                  </Link>
+                  
+                  {/* Dashboard Navigation */}
+                  {user?.role === 'employee' && (
+                    <Link to="/employee" className="dropdown-item">
+                      <FiUser className="item-icon" />
+                      <span>Employee Dashboard</span>
+                    </Link>
+                  )}
+                  
+                  {user?.role === 'manager' && (
+                    <Link to="/manager" className="dropdown-item">
+                      <FiUser className="item-icon" />
+                      <span>Manager Dashboard</span>
+                    </Link>
+                  )}
+                  
+                  {user?.role === 'admin' && (
+                    <Link to="/admin" className="dropdown-item">
+                      <FiUser className="item-icon" />
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  )}
+                  
+                  <div className="dropdown-divider"></div>
+                  
+                  <div className="dropdown-item logout-item" onClick={handleLogout}>
+                    <FiLogOut className="item-icon" />
+                    <span>Logout</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Name Edit Modal */}
+              {showNameEdit && (
+                <div className="edit-name-modal">
+                  <div className="modal-content">
+                    <h3>Edit Name</h3>
+                    <input
+                      type="text"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      placeholder="Enter your name"
+                      className="name-input"
+                      autoFocus
+                    />
+                    <div className="modal-buttons">
+                      <button onClick={handleNameCancel} className="cancel-btn">
+                        Cancel
+                      </button>
+                      <button onClick={handleNameSave} className="save-btn">
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="auth-buttons">
+              <Link to="/login" className="btn login-btn">Login</Link>
+              <Link to="/signup" className="btn signup-btn">Sign Up</Link>
+            </div>
+          )}
 
           <div 
             className={`hamburger ${isOpen ? 'active' : ''}`} 
