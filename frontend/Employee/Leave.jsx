@@ -424,8 +424,7 @@ const Leave = () => {
 
   return (
     <div className="leave-container" style={{
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      minHeight: '100vh',
+      background: 'transparent',
       padding: '2rem'
     }}>
       <NotificationComponent />

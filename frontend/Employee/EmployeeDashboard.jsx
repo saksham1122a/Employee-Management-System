@@ -18,7 +18,7 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // 2 seconds loading animation
+    }, 400); // Quick snappy loading animation
 
     return () => clearTimeout(timer);
   }, []);
@@ -121,22 +121,26 @@ const EmployeeDashboard = () => {
             className={active === "attendance" ? "active" : ""}
             onClick={() => setActive("attendance")}
           >
-            Attendance
+            <span className="menu-icon">📅</span>
+            {open && <span>Attendance</span>}
           </button>
           <button
             className={active === "tasks" ? "active" : ""}
             onClick={() => setActive("tasks")}
           >
-            Tasks
+            <span className="menu-icon">✅</span>
+            {open && <span>Tasks</span>}
           </button>
           <button
             className={active === "leave" ? "active" : ""}
             onClick={() => setActive("leave")}
           >
-            Leave
+            <span className="menu-icon">🏖️</span>
+            {open && <span>Leave</span>}
           </button>
+          <div className="sidebar-divider"></div>
           <button className="logout-btn" onClick={handleLogout}>
-            <FiLogOut />
+            <FiLogOut className="menu-icon logout-icon" />
             {open && <span>Logout</span>}
           </button>
         </nav>
@@ -145,8 +149,15 @@ const EmployeeDashboard = () => {
       {/* Main */}
       <main className="emp-main">
         <header className="emp-header">
-          <FiUser />
-          <span>Employee</span>
+          <div className="header-left">
+            <h2>{active.charAt(0).toUpperCase() + active.slice(1)}</h2>
+          </div>
+          <div className="header-right">
+            <div className="user-profile-badge">
+              <FiUser className="user-icon" />
+              <span>Employee</span>
+            </div>
+          </div>
         </header>
 
         <section className="emp-content">

@@ -160,6 +160,15 @@ const Navbar = () => {
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/about" className="nav-link">About</Link>
             <Link to="/contact" className="nav-link">Contact</Link>
+            {user?.role === 'employee' && (
+              <Link to="/employee" className="nav-link">Dashboard</Link>
+            )}
+            {user?.role === 'manager' && (
+              <Link to="/manager" className="nav-link">Dashboard</Link>
+            )}
+            {user?.role === 'admin' && (
+              <Link to="/admin" className="nav-link">Dashboard</Link>
+            )}
           </div>
 
           {/* Auth / Profile — always at sharp right */}

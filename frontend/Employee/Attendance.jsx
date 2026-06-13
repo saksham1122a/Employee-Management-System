@@ -381,9 +381,8 @@ const Attendance = () => {
   return (
     <div style={{ 
       padding: '2rem',
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      minHeight: '100vh',
-      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
+      background: 'transparent',
+      minHeight: '100vh'
     }}>
       {/* Section 1: Animated Attendance Overview */}
       <div style={{ marginBottom: '3rem' }}>
@@ -412,7 +411,7 @@ const Attendance = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
             <div>
               <h1 style={{ 
-                fontSize: '2.5rem', 
+                fontSize: '1.8rem', 
                 fontWeight: '700', 
                 background: 'linear-gradient(135deg, #667eea, #764ba2)',
                 WebkitBackgroundClip: 'text',
@@ -434,9 +433,9 @@ const Attendance = () => {
                 background: 'linear-gradient(135deg, #667eea, #764ba2)',
                 color: 'white',
                 border: 'none',
-                padding: '1rem 2rem',
-                borderRadius: '12px',
-                fontSize: '1rem',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '10px',
+                fontSize: '0.95rem',
                 fontWeight: '600',
                 cursor: 'pointer',
                 display: 'flex',
@@ -496,9 +495,9 @@ const Attendance = () => {
                 background: 'linear-gradient(135deg, #10b981, #059669)',
                 color: 'white',
                 border: 'none',
-                padding: '1rem 1.5rem',
-                borderRadius: '12px',
-                fontSize: '1rem',
+                padding: '0.75rem 1.25rem',
+                borderRadius: '10px',
+                fontSize: '0.95rem',
                 fontWeight: '600',
                 cursor: refreshing ? 'not-allowed' : 'pointer',
                 display: 'flex',
@@ -550,11 +549,11 @@ const Attendance = () => {
                 animation: 'pulse 4s ease-in-out infinite'
               }}></div>
               
-              <FiTrendingUp style={{ fontSize: '3rem', marginBottom: '1rem' }} />
-              <div style={{ fontSize: '4rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+              <FiTrendingUp style={{ fontSize: '2rem', marginBottom: '1rem' }} />
+              <div style={{ fontSize: '3.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
                 {attendanceData.percentage}%
               </div>
-              <div style={{ fontSize: '1.2rem', opacity: 0.9, marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '1rem', opacity: 0.9, marginBottom: '0.5rem' }}>
                 Attendance Rate
               </div>
               <div style={{ fontSize: '1rem', opacity: 0.8 }}>
@@ -580,9 +579,9 @@ const Attendance = () => {
               onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
-                <FiCheckCircle style={{ fontSize: '2rem', marginBottom: '0.5rem' }} />
-                <div style={{ fontSize: '2rem', fontWeight: '700' }}>{attendanceData.presentDays}</div>
-                <div style={{ opacity: 0.9 }}>Present Days</div>
+                <FiCheckCircle style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }} />
+                <div style={{ fontSize: '1.6rem', fontWeight: '700' }}>{attendanceData.presentDays}</div>
+                <div style={{ opacity: 0.9, fontSize: '0.9rem' }}>Present Days</div>
               </div>
 
               <div style={{
@@ -597,9 +596,9 @@ const Attendance = () => {
               onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
-                <FiX style={{ fontSize: '2rem', marginBottom: '0.5rem' }} />
-                <div style={{ fontSize: '2rem', fontWeight: '700' }}>{attendanceData.absentDays}</div>
-                <div style={{ opacity: 0.9 }}>Absent Days</div>
+                <FiX style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }} />
+                <div style={{ fontSize: '1.6rem', fontWeight: '700' }}>{attendanceData.absentDays}</div>
+                <div style={{ opacity: 0.9, fontSize: '0.9rem' }}>Absent Days</div>
               </div>
 
               <div style={{
@@ -614,9 +613,9 @@ const Attendance = () => {
               onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
-                <FiAlertCircle style={{ fontSize: '2rem', marginBottom: '0.5rem' }} />
-                <div style={{ fontSize: '2rem', fontWeight: '700' }}>{attendanceData.lateDays}</div>
-                <div style={{ opacity: 0.9 }}>Late Days</div>
+                <FiAlertCircle style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }} />
+                <div style={{ fontSize: '1.6rem', fontWeight: '700' }}>{attendanceData.lateDays}</div>
+                <div style={{ opacity: 0.9, fontSize: '0.9rem' }}>Late Days</div>
               </div>
 
               <div style={{
@@ -631,9 +630,9 @@ const Attendance = () => {
               onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
-                <FiBarChart2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }} />
-                <div style={{ fontSize: '2rem', fontWeight: '700' }}>{attendanceData.totalDays}</div>
-                <div style={{ opacity: 0.9 }}>Total Days</div>
+                <FiBarChart2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }} />
+                <div style={{ fontSize: '1.6rem', fontWeight: '700' }}>{attendanceData.totalDays}</div>
+                <div style={{ opacity: 0.9, fontSize: '0.9rem' }}>Total Days</div>
               </div>
             </div>
 
@@ -694,7 +693,7 @@ const Attendance = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
           <div>
             <h2 style={{ 
-              fontSize: '2rem', 
+              fontSize: '1.6rem', 
               fontWeight: '700', 
               color: '#1f2937',
               marginBottom: '0.5rem'
