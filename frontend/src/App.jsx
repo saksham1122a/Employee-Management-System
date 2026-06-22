@@ -20,10 +20,18 @@ import Leave from '../Employee/Leave';
 import './App.css';
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    // Skip loading animation on refresh if already seen in this session
+    return !sessionStorage.getItem('hasLoadedBefore');
+  });
+
+  const handleFinishLoading = () => {
+    sessionStorage.setItem('hasLoadedBefore', 'true');
+    setLoading(false);
+  };
 
   if (loading) {
-    return <OpenAnimation onFinish={() => setLoading(false)} />;
+    return <OpenAnimation onFinish={handleFinishLoading} />;
   }
 
   return (

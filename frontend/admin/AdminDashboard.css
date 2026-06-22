@@ -153,6 +153,9 @@
   display: flex;
   flex-direction: column;
   padding-top: var(--header-height);
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .sidebar.closed ~ .main-content {
@@ -261,6 +264,8 @@
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Stats Grid */

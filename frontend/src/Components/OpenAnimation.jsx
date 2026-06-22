@@ -6,14 +6,19 @@ const OpenAnimation = ({ onFinish }) => {
 
   useEffect(() => {
     // Start animation after mount
-    setTimeout(() => {
+    const animTimer = setTimeout(() => {
       setAnimate(true);
-    }, 500);
+    }, 100);
 
-    // Finish after 2.6 seconds
-    setTimeout(() => {
+    // Finish after 1.2 seconds for a faster feel
+    const finishTimer = setTimeout(() => {
       if (onFinish) onFinish();
-    }, 2600);
+    }, 1200);
+
+    return () => {
+      clearTimeout(animTimer);
+      clearTimeout(finishTimer);
+    };
   }, [onFinish]);
 
   return (

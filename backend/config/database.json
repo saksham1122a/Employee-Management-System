@@ -36,8 +36,8 @@
       "createdAt": "2026-02-22T14:03:36.483Z",
       "updatedAt": "2026-02-22T14:03:36.483Z",
       "attendance": {
-        "points": 66,
-        "lastUpdated": "2026-05-24",
+        "points": 76,
+        "lastUpdated": "2026-06-22",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -138,9 +138,19 @@
             "status": "Present",
             "points": 5,
             "timestamp": "2026-05-24T07:38:27.229Z"
+          },
+          "2026-06-19": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-06-19T15:19:24.411Z"
+          },
+          "2026-06-22": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-06-22T07:42:45.462Z"
           }
         },
-        "percentage": 80
+        "percentage": 82
       }
     },
     {
@@ -152,8 +162,8 @@
       "createdAt": "2026-02-22T14:12:32.879Z",
       "updatedAt": "2026-02-22T14:12:32.879Z",
       "attendance": {
-        "points": 84,
-        "lastUpdated": "2026-05-24",
+        "points": 94,
+        "lastUpdated": "2026-06-22",
         "dailyRecords": {
           "2026-02-23": {
             "status": "Present",
@@ -254,9 +264,19 @@
             "status": "Present",
             "points": 5,
             "timestamp": "2026-05-24T07:38:30.692Z"
+          },
+          "2026-06-19": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-06-19T15:19:27.551Z"
+          },
+          "2026-06-22": {
+            "status": "Present",
+            "points": 5,
+            "timestamp": "2026-06-22T07:42:42.446Z"
           }
         },
-        "percentage": 90
+        "percentage": 91
       }
     },
     {
@@ -303,6 +323,20 @@
       "approvedBy": "Manager User",
       "approvedOn": "2026-04-14",
       "rejectionReason": null
+    },
+    {
+      "id": "3",
+      "type": "personal",
+      "startDate": "2026-06-23",
+      "endDate": "2026-06-23",
+      "reason": "Going to attend a marrage",
+      "employeeId": "7",
+      "employeeName": "Unknown Employee",
+      "status": "pending",
+      "appliedOn": "2026-06-22",
+      "emergencyContact": "",
+      "emergencyPhone": "",
+      "attachment": null
     }
   ]
 }

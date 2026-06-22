@@ -4,6 +4,7 @@ import {
   FiPlus, FiEdit, FiTrash2, FiDownload, FiFilter, FiSearch, FiSend, FiFileText, FiUser, FiMail, FiPhone, FiCheck, FiX
 } from 'react-icons/fi';
 import './Leave.css';
+import '../src/Components/Notification.css';
 
 const Leave = () => {
   const [notification, setNotification] = useState(null);
@@ -61,11 +62,7 @@ const Leave = () => {
       <div className="notification-container">
         <div 
           className="notification-toast"
-          style={{
-            background: style.bgColor,
-            borderLeft: `4px solid ${style.borderColor}`,
-            animation: 'slideInRight 0.3s ease-out, fadeIn 0.4s ease-out'
-          }}
+          data-type={notification.type}
         >
           <div className="notification-icon">
             {style.icon}

@@ -293,6 +293,9 @@
   transition: margin-left 0.3s ease;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .sidebar.closed ~ .main-content {
@@ -479,6 +482,8 @@
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Stats Grid */

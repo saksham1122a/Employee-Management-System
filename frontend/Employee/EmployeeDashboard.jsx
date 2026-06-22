@@ -14,11 +14,11 @@ const EmployeeDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Simulate loading animation on component mount
+  // Snappy loading animation on component mount
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 400); // Quick snappy loading animation
+    }, 100);
 
     return () => clearTimeout(timer);
   }, []);

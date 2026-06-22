@@ -647,7 +647,7 @@ const UserManagement = () => {
                 Cancel
               </button>
               <button 
-                className="btn-delete"
+                className="btn-delete-confirm"
                 onClick={confirmDeleteUser}
               >
                 Delete User

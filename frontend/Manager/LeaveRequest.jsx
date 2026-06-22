@@ -295,42 +295,36 @@ const LeaveRequest = () => {
             </div>
           ) : (
             leaveRequests.map(request => (
-              <div key={request.id} className="leave-request">
+              <div key={request.id} className="leave-card">
                 <div className="leave-request-header">
-                  <div className="employee-image" style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: request.employeeImage ? '0' : '20px',
-                    fontWeight: 'bold',
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
-                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-                    border: '3px solid #fff',
-                    flexShrink: 0,
-                    position: 'relative'
-                  }}>
+                  <div className="employee-image">
                     {!request.employeeImage && (request.employeeName?.charAt(0).toUpperCase() || 'E')}
                   </div>
-                  <div>
-                    <h4 style={{ margin: '0 0 0.5rem 0', color: '#2d3748', fontSize: '1.1rem', fontWeight: '600' }}>
+                  <div className="leave-info-content">
+                    <h4>
                       {request.employeeName || request.employeeEmail || 'Unknown Employee'}
                     </h4>
                     {request.employeeEmail && request.employeeName && (
-                      <p style={{ margin: '0 0 0.5rem 0', color: '#718096', fontSize: '0.85rem' }}>
+                      <p className="employee-email-text">
                         {request.employeeEmail}
                       </p>
                     )}
-                    <p className="leave-type" style={{ margin: '0.2rem 0', color: '#667eea', fontWeight: '500' }}>
-                      {request.type}
-                    </p>
-                    <p className="leave-dates" style={{ margin: '0.2rem 0', color: '#2d3748', fontWeight: '600' }}>
-                      {request.startDate} - {request.endDate}
-                    </p>
-                    <p className="leave-reason" style={{ margin: '0.2rem 0', color: '#718096', fontStyle: 'italic' }}>
-                      {request.reason}
-                    </p>
+                    
+                    <div className="leave-meta-info">
+                      <span className="leave-type-badge">
+                        {request.type}
+                      </span>
+                      <span className="leave-dates-text">
+                        {request.startDate} - {request.endDate}
+                      </span>
+                    </div>
+
+                    <div className="leave-reason-box">
+                      <p className="leave-reason-text">
+                        {request.reason}
+                      </p>
+                    </div>
+
                     {request.attachment && (
                       <div className="attachment-section">
                         <div className="attachment-item">
@@ -374,15 +368,14 @@ const LeaveRequest = () => {
                         </div>
                       </div>
                     )}
-                    <p className="leave-applied" style={{ margin: '0.2rem 0', color: '#667eea', fontSize: '0.85rem', fontWeight: '500' }}>
+
+                    <p className="leave-applied-date">
                       Applied on: {request.appliedOn}
                     </p>
+
                     {request.status !== 'pending' && (
-                      <p className="leave-approved-by" style={{ 
-                        margin: '0.2rem 0', 
-                        color: request.status === 'approved' ? '#48bb78' : '#f56565', 
-                        fontSize: '0.85rem', 
-                        fontWeight: '500' 
+                      <p className="leave-approved-by-text" style={{ 
+                        color: request.status === 'approved' ? '#10b981' : '#ef4444' 
                       }}>
                         {request.status === 'approved' ? 'Approved by' : 'Rejected by'}: {request.approvedBy}
                       </p>
@@ -391,7 +384,7 @@ const LeaveRequest = () => {
                 </div>
                 <div className="leave-status">
                   <span className={`status-badge ${request.status}`}>
-                    {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                    {request.status}
                   </span>
                   <div className="leave-actions">
                     {request.status === 'pending' && (

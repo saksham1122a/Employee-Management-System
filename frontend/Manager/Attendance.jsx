@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiCalendar, FiCheckCircle, FiUser, FiTrendingUp, FiTrendingDown, FiX, FiCheck, FiLock, FiUnlock, FiClock, FiAward, FiTarget, FiActivity } from 'react-icons/fi';
+import { FiCalendar, FiCheckCircle, FiUser, FiTrendingUp, FiTrendingDown, FiX, FiCheck, FiLock, FiUnlock, FiClock, FiAward, FiTarget, FiActivity, FiRefreshCw, FiDatabase, FiPercent } from 'react-icons/fi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Attendance.css';
@@ -24,38 +24,6 @@ const Attendance = () => {
   useEffect(() => {
     setTimeout(() => setAnimateIn(true), 100);
     
-    // Check localStorage first for today's data
-    const today = new Date().toLocaleDateString();
-    const storedData = localStorage.getItem('attendanceData');
-    
-    if (storedData) {
-      try {
-        const data = JSON.parse(storedData);
-        console.log('🔍 Found stored data:', data);
-        
-        if (data.date === today) {
-          console.log('✅ Loading today\'s data from localStorage');
-          setEmployees(data.employees || []);
-          setStats(data.stats || {
-            presentCount: 0,
-            lateCount: 0,
-            absentCount: 0,
-            notMarkedCount: 0,
-            totalPoints: 0
-          });
-          setIsLockedForDay(data.isLocked || false);
-          setLoading(false);
-          return;
-        } else {
-          console.log('🗑️ Stored data is from different date, clearing it');
-          localStorage.removeItem('attendanceData');
-        }
-      } catch (error) {
-        console.error('❌ Error parsing stored data:', error);
-        localStorage.removeItem('attendanceData');
-      }
-    }
-    
     // Fetch fresh data from backend
     fetchEmployeesWithAttendance();
   }, []);
@@ -66,13 +34,6 @@ const Attendance = () => {
     console.log('🔄 useEffect triggered - employees length:', employees.length);
     calculateStats();
   }, [employees]);
-
-  // Save to localStorage whenever important data changes
-  useEffect(() => {
-    if (employees.length > 0) {
-      saveToLocalStorage();
-    }
-  }, [employees, stats, isLockedForDay]);
 
   // Check if all employees are marked and update lock status
   useEffect(() => {
@@ -162,8 +123,6 @@ const Attendance = () => {
       const employeesWithAttendance = await Promise.all(attendancePromises);
       console.log('Final employees with attendance:', employeesWithAttendance);
       
-      // Save to localStorage after fetching
-      const today = new Date().toLocaleDateString();
       const newStats = {
         presentCount: employeesWithAttendance.filter(emp => emp.todayMarked && emp.status === 'Present').length,
         lateCount: employeesWithAttendance.filter(emp => emp.todayMarked && emp.status === 'Late').length,
@@ -171,16 +130,6 @@ const Attendance = () => {
         notMarkedCount: employeesWithAttendance.filter(emp => !emp.todayMarked).length,
         totalPoints: employeesWithAttendance.reduce((sum, emp) => sum + emp.points, 0)
       };
-      
-      const dataToSave = {
-        date: today,
-        employees: employeesWithAttendance,
-        stats: newStats,
-        isLocked: employeesWithAttendance.every(emp => emp.todayMarked)
-      };
-      
-      localStorage.setItem('attendanceData', JSON.stringify(dataToSave));
-      console.log('💾 Fresh data saved to localStorage:', dataToSave);
       
       setEmployees(employeesWithAttendance);
       setStats(newStats);
@@ -212,18 +161,6 @@ const Attendance = () => {
     const newStats = { presentCount, lateCount, absentCount, notMarkedCount, totalPoints };
     console.log('📊 Stats calculated:', newStats);
     setStats(newStats);
-  };
-
-  const saveToLocalStorage = () => {
-    const today = new Date().toLocaleDateString();
-    const data = {
-      date: today,
-      employees,
-      stats,
-      isLocked: isLockedForDay
-    };
-    localStorage.setItem('attendanceData', JSON.stringify(data));
-    console.log('💾 Data saved to localStorage:', data);
   };
 
   const forceRefreshData = async () => {
@@ -285,9 +222,6 @@ const Attendance = () => {
 
       console.log(`Marking ${employee.name} as ${status}`);
       
-      // Show loading state
-      setLoading(true);
-      
       // Call API
       console.log('🔍 Sending API request:', { employeeId, status });
       console.log('🔍 Employee object:', employee);
@@ -334,7 +268,6 @@ const Attendance = () => {
           return updatedEmployees;
         });
         
-        setLoading(false);
         return;
         
       } else {
@@ -381,7 +314,6 @@ const Attendance = () => {
             });
             
             toast.info(`${employee.name} is already marked as ${currentAttendance.status}.`);
-            setLoading(false);
             return;
           }
         }
@@ -415,12 +347,10 @@ const Attendance = () => {
         }
         
         toast.error(errorData.message || `Failed to update attendance (${response.status}: ${response.statusText})`);
-        setLoading(false);
       }
     } catch (error) {
       console.error('Error marking attendance:', error);
       toast.error('Network error. Please try again.');
-      setLoading(false);
     }
   };
 
@@ -567,25 +497,9 @@ const Attendance = () => {
           
           <div className="header-actions">
             <div className="date-selector">
-              <FiClock className="date-icon" />
+              <FiCalendar className="date-icon" />
               <span>{selectedDate}</span>
             </div>
-            <button 
-              className={`refresh-btn ${refreshing ? 'spinning' : ''}`}
-              onClick={clearStaleData}
-              disabled={refreshing}
-            >
-              <FiActivity className={refreshing ? 'spin' : ''} />
-              {refreshing ? 'Syncing...' : 'Sync with Server'}
-            </button>
-            <button 
-              className={`refresh-btn ${refreshing ? 'spinning' : ''}`}
-              onClick={forceRefreshData}
-              disabled={refreshing}
-            >
-              <FiActivity className={refreshing ? 'spin' : ''} />
-              {refreshing ? 'Refreshing...' : 'Force Refresh'}
-            </button>
             <button 
               className={`mark-all-btn ${isLockedForDay ? 'disabled' : ''}`} 
               onClick={markAllPresent}
@@ -653,52 +567,51 @@ const Attendance = () => {
             {employees.map((employee, index) => (
               <div 
                 key={employee.id} 
-                className={`employee-card ${employee.todayMarked ? 'marked' : ''}`}
+                className={`mgr-employee-card ${employee.todayMarked ? 'marked' : ''}`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {/* Lock Overlay */}
-                {employee.todayMarked && (
-                  <div className="lock-overlay">
-                    <FiLock className="lock-icon-overlay" />
-                    <span>Attendance Marked</span>
+                <div className="mgr-card-header">
+                  <div className="mgr-avatar-wrapper">
+                    <div className="mgr-employee-avatar">
+                      {employee.name.charAt(0)}
+                    </div>
+                    {employee.todayMarked && (
+                      <div className="mgr-lock-badge" title="Attendance Marked & Locked">
+                        <FiLock />
+                      </div>
+                    )}
                   </div>
-                )}
-
-                <div className="card-header">
-                  <div className="employee-avatar">
-                    {employee.name.charAt(0)}
-                  </div>
-                  <div className="employee-info">
+                  <div className="mgr-employee-info">
                     <h4>{employee.name}</h4>
                     <p>{employee.department}</p>
                   </div>
-                  <div className="attendance-badge">
-                    <span className={`status-badge ${employee.status === 'Not Marked' ? 'not-marked' : employee.status.toLowerCase()}`}>
+                  <div className="mgr-attendance-badge">
+                    <span className={`mgr-status-badge ${employee.status === 'Not Marked' ? 'not-marked' : employee.status.toLowerCase()}`}>
                       {employee.status}
                     </span>
                   </div>
                 </div>
 
-                <div className="card-stats">
-                  <div className="stat-item">
-                    <div className="stat-label">Attendance</div>
-                    <div className="stat-value">
-                      <FiActivity className="stat-icon-small" />
+                <div className="mgr-card-stats">
+                  <div className="mgr-stat-item">
+                    <div className="mgr-stat-label">Attendance</div>
+                    <div className="mgr-stat-value">
+                      <FiPercent className="stat-icon-small" />
                       {employee.attendance}%
                     </div>
                   </div>
-                  <div className="stat-item">
-                    <div className="stat-label">Points</div>
-                    <div className="stat-value points-value" style={{ color: getPointsColor(employee.points) }}>
+                  <div className="mgr-stat-item">
+                    <div className="mgr-stat-label">Points</div>
+                    <div className="mgr-stat-value points-value" style={{ color: getPointsColor(employee.points) }}>
                       {getPointsIcon(employee.points)}
                       {employee.points}
                     </div>
                   </div>
                 </div>
 
-                <div className="card-actions">
+                <div className="mgr-card-actions">
                   <button 
-                    className={`action-btn present-btn ${employee.todayMarked ? 'disabled' : ''}`}
+                    className={`mgr-action-btn present-btn ${employee.todayMarked ? 'disabled' : ''}`}
                     onClick={() => markPresent(employee.id)}
                     disabled={employee.todayMarked}
                   >
@@ -706,7 +619,7 @@ const Attendance = () => {
                     Present
                   </button>
                   <button 
-                    className={`action-btn late-btn ${employee.todayMarked ? 'disabled' : ''}`}
+                    className={`mgr-action-btn late-btn ${employee.todayMarked ? 'disabled' : ''}`}
                     onClick={() => markLate(employee.id)}
                     disabled={employee.todayMarked}
                   >
@@ -714,7 +627,7 @@ const Attendance = () => {
                     Late
                   </button>
                   <button 
-                    className={`action-btn absent-btn ${employee.todayMarked ? 'disabled' : ''}`}
+                    className={`mgr-action-btn absent-btn ${employee.todayMarked ? 'disabled' : ''}`}
                     onClick={() => markAbsent(employee.id)}
                     disabled={employee.todayMarked}
                   >
@@ -724,14 +637,14 @@ const Attendance = () => {
                 </div>
 
                 {employee.todayMarked && (
-                  <div className="marked-indicator">
+                  <div className="mgr-marked-indicator">
                     <FiCheck />
                     <span>Marked for today</span>
                   </div>
                 )}
 
                 {employee.lastUpdated && (
-                  <div className="last-updated">
+                  <div className="mgr-last-updated">
                     <FiClock />
                     <span>Updated: {employee.lastUpdated}</span>
                   </div>

@@ -153,55 +153,58 @@ const Attendance = () => {
       // Use _id if available, otherwise use id
       const userId = currentUser._id || currentUser.id;
       
-      // Since the attendance endpoints don't exist, create mock data from user's attendance data
-      console.log('Creating attendance data from user profile...');
+      // Extract dailyRecords from user profile (real-time data from backend)
+      const dailyRecords = currentUser.attendance?.dailyRecords || {};
+      console.log('Real daily records from database:', dailyRecords);
       
-      // Create mock history from user's attendance data
-      const mockHistory = [];
-      const today = new Date();
-      for (let i = 0; i < 10; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        const status = i === 0 ? 'present' : i % 4 === 0 ? 'absent' : i % 3 === 0 ? 'late' : 'present';
-        mockHistory.push({
-          date: date.toISOString().split('T')[0],
+      // Convert database records object into sorted history array
+      const realHistory = Object.entries(dailyRecords).map(([date, record]) => {
+        const status = record.status ? record.status.toLowerCase() : 'present';
+        return {
+          date: date,
           status: status,
           checkIn: status === 'present' ? '09:00 AM' : status === 'late' ? '09:45 AM' : '--',
           checkOut: status === 'present' ? '06:00 PM' : status === 'late' ? '06:15 PM' : '--',
           hours: status === 'present' ? '9h 00m' : status === 'late' ? '8h 30m' : '0h 00m',
           performance: status === 'present' ? 'excellent' : status === 'late' ? 'average' : 'poor'
-        });
-      }
-      
-      // Set attendance data based on user profile
-      let attendancePercentage = currentUser.attendance?.percentage || 85;
-      let points = currentUser.attendance?.points || 45;
-      let todayStatus = 'present';
-      
-      // Calculate stats from mock history
-      const processedHistory = mockHistory.map(record => ({
-        date: new Date(record.date).toISOString().split('T')[0],
-        status: record.status || 'present',
-        checkIn: record.checkIn || '--',
-        checkOut: record.checkOut || '--',
-        hours: record.hours || '0h 00m',
-        performance: record.performance || 'good'
-      }));
-      
-      const presentDays = processedHistory.filter(r => r.status === 'present').length;
-      const absentDays = processedHistory.filter(r => r.status === 'absent').length;
-      const lateDays = processedHistory.filter(r => r.status === 'late').length;
-      const totalDays = processedHistory.length;
-      
-      // Generate weekly trend
-      const weeklyTrend = processedHistory.slice(-7).map(record => {
-        switch(record.status) {
-          case 'present': return 85 + Math.floor(Math.random() * 15);
-          case 'late': return 65 + Math.floor(Math.random() * 20);
-          case 'absent': return 0;
-          default: return 75;
-        }
+        };
       });
+      
+      // Sort history: newest date first
+      const sortedHistory = realHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      // Set attendance details based on user profile
+      let attendancePercentage = currentUser.attendance?.percentage || 0;
+      let points = currentUser.attendance?.points || 0;
+      
+      // Check today's status from real database records
+      const todayString = new Date().toISOString().split('T')[0];
+      const todayRecord = dailyRecords[todayString];
+      let todayStatus = todayRecord ? todayRecord.status.toLowerCase() : 'not-marked';
+      
+      // Calculate real stats from database records
+      const presentDays = sortedHistory.filter(r => r.status === 'present').length;
+      const absentDays = sortedHistory.filter(r => r.status === 'absent').length;
+      const lateDays = sortedHistory.filter(r => r.status === 'late').length;
+      const totalDays = sortedHistory.length;
+      
+      // Generate real weekly trend for last 7 calendar days
+      const weeklyTrend = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateString = date.toISOString().split('T')[0];
+        const record = dailyRecords[dateString];
+        if (record) {
+          const status = record.status ? record.status.toLowerCase() : '';
+          if (status === 'present') weeklyTrend.push(95);
+          else if (status === 'late') weeklyTrend.push(65);
+          else if (status === 'absent') weeklyTrend.push(10);
+          else weeklyTrend.push(0);
+        } else {
+          weeklyTrend.push(0);
+        }
+      }
       
       const newAttendanceData = {
         percentage: attendancePercentage,
@@ -213,11 +216,11 @@ const Attendance = () => {
         weeklyTrend,
         todayStatus,
         points,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: currentUser.attendance?.lastUpdated || new Date().toISOString()
       };
       
       setAttendanceData(newAttendanceData);
-      setHistory(processedHistory);
+      setHistory(sortedHistory);
       setLoading(false);
       
       toast.success('Attendance data loaded successfully!');
@@ -275,7 +278,7 @@ const Attendance = () => {
 
   const handleExportHistory = () => {
     console.log('Exporting attendance history...');
-    alert('Attendance history exported successfully!');
+    toast.success('Attendance history exported successfully!');
   };
 
   if (loading) {
