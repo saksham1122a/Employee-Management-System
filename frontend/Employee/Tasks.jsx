@@ -36,7 +36,7 @@ const Tasks = () => {
       // If no localStorage data, try Manager's API
       const token = sessionStorage.getItem('token');
       if (token) {
-        const response = await fetch('http://localhost:5000/api/auth/employees', {
+        const response = await fetch(`${window.API_BASE_URL}/api/auth/employees`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

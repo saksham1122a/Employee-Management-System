@@ -61,7 +61,7 @@ const Attendance = () => {
       console.log('Fetching employees with attendance data...');
       
       // Fetch employees first
-      const employeesResponse = await fetch('http://localhost:5000/api/auth/employees', {
+      const employeesResponse = await fetch(`${window.API_BASE_URL}/api/auth/employees`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -89,7 +89,7 @@ const Attendance = () => {
       // Fetch today's attendance for each employee
       const attendancePromises = formattedEmployees.map(async (employee) => {
         try {
-          const attendanceResponse = await fetch(`http://localhost:5000/api/auth/attendance/${employee.id}/today`, {
+          const attendanceResponse = await fetch(`${window.API_BASE_URL}/api/auth/attendance/${employee.id}/today`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           
@@ -227,7 +227,7 @@ const Attendance = () => {
       console.log('🔍 Employee object:', employee);
       
       // Try the API call
-      const response = await fetch('http://localhost:5000/api/auth/attendance', {
+      const response = await fetch(`${window.API_BASE_URL}/api/auth/attendance`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -321,7 +321,7 @@ const Attendance = () => {
         // If it's a 400 error, try with different ID format
         if (response.status === 400) {
           console.log('🔄 Trying with string employee ID...');
-          const retryResponse = await fetch('http://localhost:5000/api/auth/attendance', {
+          const retryResponse = await fetch(`${window.API_BASE_URL}/api/auth/attendance`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -373,7 +373,7 @@ const Attendance = () => {
 
       for (const employee of unmarkedEmployees) {
         try {
-          const response = await fetch('http://localhost:5000/api/auth/attendance', {
+          const response = await fetch(`${window.API_BASE_URL}/api/auth/attendance`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',

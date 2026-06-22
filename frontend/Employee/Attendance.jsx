@@ -63,7 +63,7 @@ const Attendance = () => {
       console.log('Fetching real-time attendance data...');
       
       // Get current user info from employees endpoint (same as Manager uses)
-      const response = await fetch('http://localhost:5000/api/auth/employees', {
+      const response = await fetch(`${window.API_BASE_URL}/api/auth/employees`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

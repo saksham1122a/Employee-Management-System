@@ -1,76 +1,113 @@
-// File-based persistent database
+// MongoDB Atlas persistent database adapter
+const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
 
 const DB_FILE = path.join(__dirname, 'database.json');
 
-// Initialize database file if it doesn't exist
-const initializeDatabase = () => {
-  if (!fs.existsSync(DB_FILE)) {
-    const initialData = {
-      users: [
-        {
-          _id: '1',
-          name: 'Admin User',
-          email: 'admin@example.com',
-          password: 'password',
-          role: 'admin',
-          createdAt: new Date('2024-01-05'),
-          updatedAt: new Date('2024-01-05')
-        },
-        {
-          _id: '2',
-          name: 'Manager User',
-          email: 'sakshamnnda01+manager@gmail.com',
-          password: 'sakshammanager@#',
-          role: 'manager',
-          createdAt: new Date('2024-01-10'),
-          updatedAt: new Date('2024-01-10')
-        },
-        {
-          _id: '3',
-          name: 'Saksham Admin',
-          email: 'sakshamnnda01@gmail.com',
-          password: 'sakshamadmin@#',
-          role: 'admin',
-          createdAt: new Date('2024-01-15'),
-          updatedAt: new Date('2024-01-15')
-        }
-      ]
-    };
-    
-    fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2));
-    console.log('📊 Database file initialized');
-  }
+// Define Schema for database state storage
+const DbStoreSchema = new mongoose.Schema({
+  key: { type: String, default: 'ems_db_store', unique: true },
+  data: { type: Object, required: true }
+}, { timestamps: true });
+
+const DbStore = mongoose.model('DbStore', DbStoreSchema);
+
+let dbInMemory = { users: [] };
+
+const initialData = {
+  users: [
+    {
+      _id: '1',
+      name: 'Admin User',
+      email: 'admin@example.com',
+      password: 'password',
+      role: 'admin',
+      createdAt: new Date('2024-01-05'),
+      updatedAt: new Date('2024-01-05')
+    },
+    {
+      _id: '2',
+      name: 'Manager User',
+      email: 'sakshamnnda01+manager@gmail.com',
+      password: 'sakshammanager@#',
+      role: 'manager',
+      createdAt: new Date('2024-01-10'),
+      updatedAt: new Date('2024-01-10')
+    },
+    {
+      _id: '3',
+      name: 'Saksham Admin',
+      email: 'sakshamnnda01@gmail.com',
+      password: 'sakshamadmin@#',
+      role: 'admin',
+      createdAt: new Date('2024-01-15'),
+      updatedAt: new Date('2024-01-15')
+    }
+  ],
+  leaveRequests: []
 };
 
-// Load data from file
-const loadData = () => {
+// Connect to MongoDB and fetch database state
+const connectDB = async () => {
   try {
-    if (fs.existsSync(DB_FILE)) {
-      const data = fs.readFileSync(DB_FILE, 'utf8');
-      return JSON.parse(data);
+    const mongoUri = process.env.MONGO_URI || "mongodb+srv://sakshamwork47_db_user:lYuBBxY2e6NmpMdx@sakshamems.fripeyu.mongodb.net/";
+    console.log("🔌 Connecting to MongoDB Atlas...");
+    await mongoose.connect(mongoUri);
+    console.log("📊 Connected to MongoDB Atlas successfully");
+
+    // Fetch state document
+    let record = await DbStore.findOne({ key: 'ems_db_store' });
+    if (record) {
+      dbInMemory = record.data;
+      console.log("📦 Database state loaded from MongoDB Atlas");
+    } else {
+      console.log("⚠️ No database state found in MongoDB Atlas. Initializing...");
+      
+      // Fallback: load from local file if exists
+      if (fs.existsSync(DB_FILE)) {
+        try {
+          const fileData = fs.readFileSync(DB_FILE, 'utf8');
+          dbInMemory = JSON.parse(fileData);
+          console.log("📂 Loaded state from local database.json file");
+        } catch (e) {
+          dbInMemory = initialData;
+        }
+      } else {
+        dbInMemory = initialData;
+      }
+
+      // Save initial data to MongoDB
+      await DbStore.create({ key: 'ems_db_store', data: dbInMemory });
+      console.log("📊 Database state initialized in MongoDB Atlas");
     }
   } catch (error) {
-    console.error('❌ Error loading database:', error);
+    console.error("❌ MongoDB Atlas connection failed:", error);
+    process.exit(1);
   }
-  return { users: [] };
 };
 
-// Save data to file
+// Load data from memory
+const loadData = () => {
+  return dbInMemory;
+};
+
+// Save data to memory and push asynchronously to MongoDB Atlas
 const saveData = (data) => {
-  try {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
-    console.log('💾 Data saved to database');
-  } catch (error) {
-    console.error('❌ Error saving database:', error);
-  }
-};
-
-const connectDB = async () => {
-  initializeDatabase();
-  console.log("📊 Persistent database connected successfully");
-  return Promise.resolve();
+  dbInMemory = data;
+  
+  // Update MongoDB state document asynchronously
+  DbStore.updateOne({ key: 'ems_db_store' }, { data }, { upsert: true })
+    .then(() => {
+      console.log('💾 Data successfully synced with MongoDB Atlas');
+      // Also write locally as a backup
+      fs.writeFile(DB_FILE, JSON.stringify(data, null, 2), (err) => {
+        if (err) console.error('❌ Error saving local backup:', err);
+      });
+    })
+    .catch(error => {
+      console.error('❌ Error syncing with MongoDB Atlas:', error);
+    });
 };
 
 const getUserModel = () => {

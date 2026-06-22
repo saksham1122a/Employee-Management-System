@@ -145,7 +145,7 @@ const Performance = () => {
       }
       
       // Fetch employees data
-      const employeesResponse = await fetch('http://localhost:5000/api/auth/employees', {
+      const employeesResponse = await fetch(`${window.API_BASE_URL}/api/auth/employees`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

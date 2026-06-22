@@ -87,14 +87,14 @@ const Payroll = () => {
       }
 
       // Fetch employees data (similar to MyTeam.jsx)
-      const employeesResponse = await fetch('http://localhost:5000/api/auth/employees', {
+      const employeesResponse = await fetch(`${window.API_BASE_URL}/api/auth/employees`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
       // Fetch managers data (similar to User.jsx)
-      const managersResponse = await fetch('http://localhost:5000/api/auth/users', {
+      const managersResponse = await fetch(`${window.API_BASE_URL}/api/auth/users`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -221,7 +221,7 @@ const Payroll = () => {
       // Try to update backend (but don't fail if it doesn't work)
       try {
         // Try the users endpoint first (more likely to exist)
-        const response = await fetch('http://localhost:5000/api/auth/users/' + editingSalary.id, {
+        const response = await fetch(`${window.API_BASE_URL}/api/auth/users/` + editingSalary.id, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

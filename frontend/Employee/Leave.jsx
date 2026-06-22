@@ -109,7 +109,7 @@ const Leave = () => {
         return;
       }
       
-      const response = await fetch('http://localhost:5000/api/auth/leave/requests', {
+      const response = await fetch(`${window.API_BASE_URL}/api/auth/leave/requests`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -192,7 +192,7 @@ const Leave = () => {
         formDataToSend.append('attachment', quickFormData.attachment);
       }
       
-      const response = await fetch('http://localhost:5000/api/auth/leave/request', {
+      const response = await fetch(`${window.API_BASE_URL}/api/auth/leave/request`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -293,7 +293,7 @@ const Leave = () => {
         formDataToSend.append('attachment', formData.attachment);
       }
       
-      const response = await fetch('http://localhost:5000/api/auth/leave/request', {
+      const response = await fetch(`${window.API_BASE_URL}/api/auth/leave/request`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -349,7 +349,7 @@ const Leave = () => {
           return;
         }
         
-        const response = await fetch(`http://localhost:5000/api/auth/leave/requests/${id}`, {
+        const response = await fetch(`${window.API_BASE_URL}/api/auth/leave/requests/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`

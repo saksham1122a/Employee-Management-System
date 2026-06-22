@@ -4,7 +4,7 @@ import './User.css';
 
 const UserManagement = () => {
   // Define API base URL
-  const API_BASE_URL = 'http://localhost:5000';
+  const API_BASE_URL = window.API_BASE_URL;
   
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -55,14 +55,14 @@ const ManagerDashboard = () => {
       }
       
       // Fetch employees data
-      const employeesResponse = await fetch('http://localhost:5000/api/auth/employees', {
+      const employeesResponse = await fetch(`${window.API_BASE_URL}/api/auth/employees`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       
       // Fetch leave requests
-      const leavesResponse = await fetch('http://localhost:5000/api/auth/leave/requests', {
+      const leavesResponse = await fetch(`${window.API_BASE_URL}/api/auth/leave/requests`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

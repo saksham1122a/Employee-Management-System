@@ -308,7 +308,7 @@ const createLeaveRequest = async (req, res) => {
       message: "Leave request submitted successfully",
       leaveRequest: {
         ...newLeaveRequest,
-        attachmentUrl: attachment ? `http://localhost:5000/uploads/${attachment}` : null
+        attachmentUrl: attachment ? `${req.protocol}://${req.get('host')}/uploads/${attachment}` : null
       }
     });
   } catch (error) {

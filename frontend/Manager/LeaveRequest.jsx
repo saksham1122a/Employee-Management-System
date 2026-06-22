@@ -18,7 +18,7 @@ const LeaveRequest = () => {
         return;
       }
       
-      const response = await fetch('http://localhost:5000/api/auth/leave/requests/all', {
+      const response = await fetch(`${window.API_BASE_URL}/api/auth/leave/requests/all`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -39,7 +39,7 @@ const LeaveRequest = () => {
                 employeeName: employeeData.name || employeeData.email || 'Unknown Employee',
                 employeeImage: employeeData.profileImage || employeeData.image || null,
                 employeeEmail: employeeData.email,
-                attachmentUrl: request.attachment ? `http://localhost:5000/uploads/${request.attachment}` : null
+                attachmentUrl: request.attachment ? `${window.API_BASE_URL}/uploads/${request.attachment}` : null
               };
             } else {
               // Fallback: try to extract name from request data
@@ -48,7 +48,7 @@ const LeaveRequest = () => {
                 ...request,
                 employeeName: name,
                 employeeEmail: request.employeeEmail || request.employee?.email || '',
-                attachmentUrl: request.attachment ? `http://localhost:5000/uploads/${request.attachment}` : null
+                 attachmentUrl: request.attachment ? `${window.API_BASE_URL}/uploads/${request.attachment}` : null
               };
             }
           } catch (error) {
@@ -56,7 +56,7 @@ const LeaveRequest = () => {
             return {
               ...request,
               employeeName: request.employeeName || request.name || 'Unknown Employee',
-              attachmentUrl: request.attachment ? `http://localhost:5000/uploads/${request.attachment}` : null
+              attachmentUrl: request.attachment ? `${window.API_BASE_URL}/uploads/${request.attachment}` : null
             };
           }
         }));
@@ -82,7 +82,7 @@ const LeaveRequest = () => {
       if (!token) return { name: 'Unknown Employee', email: '', profileImage: null };
       
       // Try to find employee by ID first
-      let response = await fetch(`http://localhost:5000/api/auth/employees/${employeeIdOrEmail}`, {
+      let response = await fetch(`${window.API_BASE_URL}/api/auth/employees/${employeeIdOrEmail}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -90,7 +90,7 @@ const LeaveRequest = () => {
       
       if (!response.ok) {
         // If not found by ID, try to find by email in all employees
-        const allEmployeesResponse = await fetch('http://localhost:5000/api/auth/employees', {
+        const allEmployeesResponse = await fetch(`${window.API_BASE_URL}/api/auth/employees`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -140,7 +140,7 @@ const LeaveRequest = () => {
         return;
       }
       
-      const response = await fetch(`http://localhost:5000/api/auth/leave/requests/${requestId}`, {
+      const response = await fetch(`${window.API_BASE_URL}/api/auth/leave/requests/${requestId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -187,7 +187,7 @@ const LeaveRequest = () => {
       console.log('Attempting to delete request:', requestId);
       console.log('Using token:', token ? 'Token exists' : 'No token found');
 
-      const response = await fetch(`http://localhost:5000/api/auth/leave/requests/${requestId}`, {
+      const response = await fetch(`${window.API_BASE_URL}/api/auth/leave/requests/${requestId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -336,7 +336,7 @@ const LeaveRequest = () => {
                             {request.attachment.toLowerCase().match(/\.(jpg|jpeg|png|gif|html|pdf|doc|docx)$/i) && (
                               <button
                                 className="btn-view-attachment"
-                                onClick={() => window.open(request.attachmentUrl || `http://localhost:5000/uploads/${request.attachment}`, '_blank')}
+                                onClick={() => window.open(request.attachmentUrl || `${window.API_BASE_URL}/uploads/${request.attachment}`, '_blank')}
                                 title="View attachment"
                               >
                                 <FiEye />
@@ -347,7 +347,7 @@ const LeaveRequest = () => {
                               className="btn-download-attachment"
                               onClick={() => {
                                 const link = document.createElement('a');
-                                link.href = request.attachmentUrl || `http://localhost:5000/uploads/${request.attachment}`;
+                                link.href = request.attachmentUrl || `${window.API_BASE_URL}/uploads/${request.attachment}`;
                                 link.download = request.attachment;
                                 link.click();
                               }}

@@ -122,7 +122,7 @@ const Navbar = () => {
 
     try {
       // Update backend (you'll need to create this API endpoint)
-      const res = await fetch('http://localhost:5000/api/auth/update-name', {
+      const res = await fetch(`${window.API_BASE_URL}/api/auth/update-name`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
